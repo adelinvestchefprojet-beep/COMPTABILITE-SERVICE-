@@ -4,9 +4,20 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>ERP OHADA Pro — Gestion Comptable</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2712%27 fill=%27%2301823F%27/%3E%3Cpath d=%27M18 44V20h28v7H26v4h17v7H26v6z%27 fill=%27%23fff%27/%3E%3Ccircle cx=%2750%27 cy=%2714%27 r=%276%27 fill=%27%23F2C94C%27/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<script>
+/* Fallback Chart.js: certains hébergeurs/proxy peuvent bloquer cdnjs. */
+(function(){
+  if (window.Chart) return;
+  var s=document.createElement('script');
+  s.src='https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js';
+  s.async=false;
+  document.head.appendChild(s);
+})();
+</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <style>
@@ -662,6 +673,7 @@ let charts={};
 function destroyChart(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
 
 function buildChartCA(){
+  if(!window.Chart)return;
   destroyChart('ca');
   const canvas=document.getElementById('ch-ca');if(!canvas)return;
   charts['ca']=new Chart(canvas,{type:'bar',data:{
@@ -678,6 +690,7 @@ function buildChartCA(){
 }
 
 function buildChartTres(){
+  if(!window.Chart)return;
   destroyChart('tres');
   const canvas=document.getElementById('ch-tres');if(!canvas)return;
   charts['tres']=new Chart(canvas,{type:'line',data:{
@@ -693,6 +706,7 @@ function buildChartTres(){
 }
 
 function buildChartDoughnut(){
+  if(!window.Chart)return;
   destroyChart('charges');
   const canvas=document.getElementById('ch-charges');if(!canvas)return;
   const colors=['#16A34A','#3B82F6','#F59E0B','#8B5CF6','#DC2626','#06B6D4','#F97316'];
@@ -1802,7 +1816,15 @@ function navigate(page){
     // Init graphiques après rendu
     if(page==='dashboard'){
       setTimeout(()=>{
-        buildChartCA();buildChartTres();buildChartDoughnut();buildSparklines();animateKPIs();
+        let tries=0;
+        const initCharts=()=>{
+          if(window.Chart || tries++>=20){
+            buildChartCA();buildChartTres();buildChartDoughnut();buildSparklines();animateKPIs();
+            return;
+          }
+          setTimeout(initCharts,100);
+        };
+        initCharts();
       },50);
     }
   },80);
