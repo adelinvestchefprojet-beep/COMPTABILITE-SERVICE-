@@ -6,16 +6,9 @@
 <title>ADEL S.A.S. — ERP Gestion Comptable OHADA</title>
 <meta name="theme-color" content="#008A45">
 <meta name="description" content="ADEL S.A.S. — ERP interne de gestion comptable, commerciale et financière OHADA">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23052E21'/%3E%3Ctext x='50' y='67' text-anchor='middle' font-size='55' font-family='Arial' font-weight='800' fill='white'%3EA%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
-<script>
-/* Secours Chart.js : si jsDelivr est bloqué, on tente unpkg. */
-if(typeof window.Chart === 'undefined'){
-  document.write('<script src="https://unpkg.com/chart.js@4.4.4/dist/chart.umd.min.js"><\/script>');
-}
-</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -473,8 +466,8 @@ select.fc{cursor:pointer}
 <div class="card" style="text-align:center;padding:3rem 2rem">
   <div style="font-size:3rem;margin-bottom:1rem">🔐</div>
   <h3 style="margin-bottom:.5rem;color:var(--text-primary)">Utilisateurs &amp; Rôles</h3>
-  <p style="color:var(--text-muted);margin-bottom:1.5rem">Ce module est disponible dans la version complète de production.</p>
-  <span class="badge green" style="font-size:.8rem;padding:.25rem .875rem">Disponible en production avec Supabase</span>
+  <p style="color:var(--text-muted);margin-bottom:1.5rem"></p>
+  <span class="badge green" style="font-size:.8rem;padding:.25rem .875rem"></span>
 </div></div>
 </main>
 
@@ -1392,16 +1385,52 @@ function pageTVA(){
 </div>`;
 }
 
-/* ── PAGE GÉNÉRIQUE ─────────────────────────────────────── */
-function pageGeneric(title,subtitle,icon='📊'){
-  return `
-<div class="ph"><div class="ph-l"><h1 class="ph-ttl">${title}</h1><p class="ph-sub">${subtitle}</p></div></div>
-<div class="card" style="text-align:center;padding:3rem 2rem">
-  <div style="font-size:3rem;margin-bottom:1rem">${icon}</div>
-  <h3 style="margin-bottom:.5rem;color:var(--text-primary)">${title}</h3>
-  <p style="color:var(--text-muted);margin-bottom:1.5rem">Ce module est disponible dans la version complète de production.</p>
-  <span class="badge green" style="font-size:.8rem;padding:.25rem .875rem">Disponible en production avec Supabase</span>
-</div>`;
+/* ── MODULES OPÉRATIONNELS ─────────────────────────────── */
+function pageGeneric(title,subtitle,icon='📊',key='module'){
+  const storeKey='adel_module_'+key;
+  let rows=[];
+  try{ rows=JSON.parse(localStorage.getItem(storeKey)||'[]'); }catch(e){ rows=[]; }
+  const money=v=>F.money(Number(v||0));
+  const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  const renderRows=()=>{
+    const body=document.getElementById('mod-body'); if(!body)return;
+    body.innerHTML=rows.length?rows.map((r,i)=>`<tr style="border-bottom:1px solid var(--border)">
+      <td style="padding:.7rem">${esc(r.date)}</td><td style="padding:.7rem;font-weight:600">${esc(r.reference)}</td>
+      <td style="padding:.7rem">${esc(r.libelle)}</td><td style="padding:.7rem;text-align:right;font-family:monospace">${money(r.montant)}</td>
+      <td style="padding:.7rem;text-align:center"><button class="btn btn-sm" onclick="adelDeleteModuleRow('${storeKey}',${i})">Supprimer</button></td>
+    </tr>`).join(''):`<tr><td colspan="5" style="padding:2rem;text-align:center;color:var(--text-muted)">Aucune opération enregistrée.</td></tr>`;
+    const total=rows.reduce((a,r)=>a+Number(r.montant||0),0);
+    const el=document.getElementById('mod-total'); if(el)el.textContent=money(total);
+    const nb=document.getElementById('mod-count'); if(nb)nb.textContent=rows.length;
+  };
+  setTimeout(renderRows,0);
+  return `<div class="ph"><div class="ph-l"><h1 class="ph-ttl">${icon} ${esc(title)}</h1><p class="ph-sub">${esc(subtitle)}</p></div></div>
+  <div class="kpi-grid" style="margin-bottom:1rem">
+    <div class="kpi"><div class="kpi-lbl">Opérations</div><div class="kpi-val" id="mod-count">0</div></div>
+    <div class="kpi"><div class="kpi-lbl">Total</div><div class="kpi-val" id="mod-total">0 FCFA</div></div>
+  </div>
+  <div class="card" style="margin-bottom:1rem"><div class="card-h"><div><div class="card-title">Nouvelle opération</div><div class="card-sub">Saisie immédiate et conservation locale</div></div></div>
+    <div class="fgrid3">
+      <div class="fg"><label class="fl">Date</label><input id="mod-date" class="fc" type="date" value="${new Date().toISOString().slice(0,10)}"></div>
+      <div class="fg"><label class="fl">Référence</label><input id="mod-ref" class="fc" placeholder="Référence"></div>
+      <div class="fg"><label class="fl">Montant (FCFA)</label><input id="mod-montant" class="fc" type="number" min="0" step="0.01" placeholder="0"></div>
+    </div>
+    <div class="fg" style="margin-top:.75rem"><label class="fl">Libellé / description</label><input id="mod-libelle" class="fc" placeholder="Description de l'opération"></div>
+    <div style="display:flex;justify-content:flex-end;margin-top:1rem"><button class="btn btn-primary" onclick="adelAddModuleRow('${storeKey}')">＋ Enregistrer</button></div>
+  </div>
+  <div class="card"><div class="card-h"><div><div class="card-title">Journal des opérations</div><div class="card-sub">Données réellement saisies dans ce module</div></div></div>
+    <div style="overflow:auto"><table style="width:100%;border-collapse:collapse"><thead><tr style="text-align:left;border-bottom:1px solid var(--border)"><th style="padding:.7rem">Date</th><th>Référence</th><th>Libellé</th><th style="text-align:right">Montant</th><th style="text-align:center">Action</th></tr></thead><tbody id="mod-body"></tbody></table></div>
+  </div>`;
+}
+function adelAddModuleRow(storeKey){
+  const row={date:document.getElementById('mod-date')?.value||'',reference:document.getElementById('mod-ref')?.value||'',libelle:document.getElementById('mod-libelle')?.value||'',montant:Number(document.getElementById('mod-montant')?.value||0)};
+  if(!row.libelle){toast('Veuillez renseigner le libellé.','warn');return;}
+  let rows=[];try{rows=JSON.parse(localStorage.getItem(storeKey)||'[]')}catch(e){}
+  rows.unshift(row);localStorage.setItem(storeKey,JSON.stringify(rows));toast('Opération enregistrée.','success');navigate(location.hash.replace('#','')||'dashboard');
+}
+function adelDeleteModuleRow(storeKey,i){
+  let rows=[];try{rows=JSON.parse(localStorage.getItem(storeKey)||'[]')}catch(e){}
+  rows.splice(i,1);localStorage.setItem(storeKey,JSON.stringify(rows));navigate(location.hash.replace('#','')||'dashboard');
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -1415,34 +1444,34 @@ const ROUTES={
   'employes':     ()=>pageEmployes(),
   'tva':          ()=>pageTVA(),
   'plan-comptable':()=>pageBalance(), // réutilise le format
-  'bilan':        ()=>pageGeneric('Bilan Comptable','Situation financière au '+F.date(new Date().toISOString(),'long'),'⚖️'),
-  'resultat':     ()=>pageGeneric('Compte de Résultat','Exercice '+new Date().getFullYear(),'📈'),
-  'grand-livre':  ()=>pageGeneric('Grand Livre','Détail par compte','📚'),
+  'bilan':        ()=>pageGeneric('Bilan Comptable','Situation financière','⚖️','bilan'),
+  'resultat':     ()=>pageGeneric('Compte de Résultat','Synthèse des produits et charges','📈','resultat'),
+  'grand-livre':  ()=>pageGeneric('Grand Livre','Détail des opérations par compte','📚','grand-livre'),
   'devis':        ()=>pageDevis(),
-  'avoirs':       ()=>pageGeneric('Avoirs','Notes de crédit','↩️'),
-  'paiements':    ()=>pageGeneric('Paiements reçus','Encaissements clients','💰'),
-  'commandes-achat':()=>pageGeneric('Bons de commande','Achats fournisseurs','🛒'),
-  'factures-fournisseur':()=>pageGeneric('Factures fournisseurs','Dettes fournisseurs','🧾'),
-  'paiements-achat':()=>pageGeneric('Paiements émis','Décaissements fournisseurs','💳'),
+  'avoirs':       ()=>pageGeneric('Avoirs','Notes de crédit clients','↩️','avoirs'),
+  'paiements':    ()=>pageGeneric('Paiements reçus','Encaissements clients','💰','paiements'),
+  'commandes-achat':()=>pageGeneric('Bons de commande','Achats fournisseurs','🛒','commandes-achat'),
+  'factures-fournisseur':()=>pageGeneric('Factures fournisseurs','Dettes fournisseurs','🧾','factures-fournisseur'),
+  'paiements-achat':()=>pageGeneric('Paiements émis','Décaissements fournisseurs','💳','paiements-achat'),
   'clients':      ()=>pageClients(),
   'fournisseurs': ()=>pageFournisseurs(),
   'banques':      ()=>pageBanques(),
-  'caisse':       ()=>pageGeneric('Caisse','Mouvements espèces','💵'),
+  'caisse':       ()=>pageGeneric('Caisse','Mouvements espèces','💵','caisse'),
   'articles':     ()=>pageArticles(),
-  'inventaire':   ()=>pageGeneric('Inventaire','Comptage des stocks','🗂️'),
-  'mouvements-stock':()=>pageGeneric('Mouvements de Stock','Entrées et sorties','🔄'),
-  'immobilisations':()=>pageGeneric('Immobilisations','Amortissements automatiques','🏗️'),
+  'inventaire':   ()=>pageGeneric('Inventaire','Comptage des stocks','🗂️','inventaire'),
+  'mouvements-stock':()=>pageGeneric('Mouvements de Stock','Entrées et sorties','🔄','mouvements-stock'),
+  'immobilisations':()=>pageGeneric('Immobilisations','Amortissements et suivi des actifs','🏗️','immobilisations'),
   'salaires':     ()=>pageSalaires(),
-  'conges':       ()=>pageGeneric('Congés & Absences','Gestion des absences','🏖️'),
-  'cotisations':  ()=>pageGeneric('Cotisations Sociales','CNSS, IPRES, ITS','📊'),
-  'is':           ()=>pageGeneric('Impôt sur les Sociétés','IS à 30% · IMF 0,15%','🏛️'),
-  'patente':      ()=>pageGeneric('Patente','Contribution économique locale','📋'),
-  'rapport-mensuel':()=>pageGeneric('Rapport Mensuel','Synthèse de la période','📄'),
-  'rapport-annuel':()=>pageGeneric('Rapport Annuel','Exercice '+new Date().getFullYear(),'📊'),
-  'cash-flow':    ()=>pageGeneric('Cash Flow','Flux de trésorerie','💧'),
-  'ratios':       ()=>pageGeneric('Ratios Financiers','Indicateurs de performance','📐'),
+  'conges':       ()=>pageGeneric('Congés & Absences','Gestion des absences','🏖️','conges'),
+  'cotisations':  ()=>pageGeneric('Cotisations Sociales','CNSS, IPRES, ITS','📊','cotisations'),
+  'is':           ()=>pageGeneric('Impôt sur les Sociétés','Suivi fiscal','🏛️','is'),
+  'patente':      ()=>pageGeneric('Patente','Contribution économique locale','📋','patente'),
+  'rapport-mensuel':()=>pageGeneric('Rapport Mensuel','Synthèse de la période','📄','rapport-mensuel'),
+  'rapport-annuel':()=>pageGeneric('Rapport Annuel','Synthèse annuelle','📊','rapport-annuel'),
+  'cash-flow':    ()=>pageGeneric('Cash Flow','Flux de trésorerie','💧','cash-flow'),
+  'ratios':       ()=>pageGeneric('Ratios Financiers','Indicateurs de performance','📐','ratios'),
   'ia-assistant': ()=>pageIA(),
-  'utilisateurs': ()=>pageGeneric('Utilisateurs & Rôles','Gestion des accès et permissions','🔐'),
+  'utilisateurs': ()=>pageGeneric('Utilisateurs & Rôles','Gestion des accès et permissions','🔐','utilisateurs'),
   'parametres':   ()=>pageGeneric('Paramètres','Configuration de l\'application','⚙️'),
 };
 
@@ -1990,23 +2019,18 @@ function navigate(page, push=true, sync=true){
 
     // Init graphiques après rendu
  if(page==='dashboard'){
-  const initCharts=()=>{
-    if(typeof window.Chart === 'undefined') return false;
+  setTimeout(()=>{
+    if(typeof Chart === 'undefined'){
+      console.warn('Chart.js non disponible.');
+      return;
+    }
+
     buildChartCA();
     buildChartTres();
     buildChartDoughnut();
     buildSparklines();
     animateKPIs();
-    return true;
-  };
-  let tries=0;
-  const chartTimer=setInterval(()=>{
-    tries++;
-    if(initCharts() || tries>=30){
-      clearInterval(chartTimer);
-      if(typeof window.Chart === 'undefined') console.warn('Chart.js indisponible après plusieurs tentatives.');
-    }
-  },100);
+  },300);
 }
     if(sync && page==='clients'){
       loadClientsFromSupabase().then(ok=>{if(ok && currentPage==='clients')navigate(page,false,false);});
