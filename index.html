@@ -282,6 +282,7 @@ select.fc{cursor:pointer}
     <div class="sub-menu" id="sub1">
       <div class="sub-it" data-page="plan-comptable">Plan Comptable OHADA</div>
       <div class="sub-it" data-page="journal">Journal des écritures</div>
+      <div class="sub-it" data-page="od">Opérations Diverses (OD)</div>
       <div class="sub-it" data-page="grand-livre">Grand Livre</div>
       <div class="sub-it" data-page="balance">Balance Générale</div>
       <div class="sub-it" data-page="bilan">Bilan</div>
@@ -1197,11 +1198,44 @@ function saveJournalEntry(){
   if(Math.abs(d-c)>0.01){toast('Écriture déséquilibrée : le débit doit être égal au crédit.','error');return;}
   if(rows.some(r=>!r.libellé)){toast('Chaque ligne doit avoir un libellé.','error');return;}
   rows.forEach(r=>D.ecritures.unshift({date,ref,compte:r.compte,libellé:r.libellé,débit:r.débit,crédit:r.crédit,journal}));
-  persistDB();document.getElementById('journal-modal')?.remove();toast('Écriture enregistrée et équilibrée.','success');navigate('journal');
+  persistDB();document.getElementById('journal-modal')?.remove();toast('Écriture enregistrée et équilibrée.','success');navigate(journal==='OD'?'od':'journal');
 }
 function deleteJournalEntry(ref){
   if(!ref)return;if(!confirm(`Supprimer toutes les lignes de ${ref} ?`))return;
   D.ecritures=D.ecritures.filter(e=>e.ref!==ref);persistDB();navigate('journal');toast(`Écriture ${ref} supprimée.`,'success');
+}
+
+/* ── OPÉRATIONS DIVERSES (OD) ───────────────────────────── */
+function pageOD(){
+  const rows=D.ecritures.filter(e=>String(e.journal||'').toUpperCase()==='OD');
+  const refs=[...new Set(rows.map(e=>e.ref).filter(Boolean))];
+  const totalD=rows.reduce((s,e)=>s+Number(e.débit||0),0);
+  const totalC=rows.reduce((s,e)=>s+Number(e.crédit||0),0);
+  const planMap={};D.plan.forEach(c=>planMap[c.compte]=c.libellé);
+  const groups={}; rows.forEach(e=>(groups[e.ref]||(groups[e.ref]=[])).push(e));
+  const cards=Object.entries(groups).sort((a,b)=>String(b[1][0]?.date||'').localeCompare(String(a[1][0]?.date||''))).map(([ref,lines])=>{
+    const d=lines.reduce((s,e)=>s+Number(e.débit||0),0), c=lines.reduce((s,e)=>s+Number(e.crédit||0),0);
+    const first=lines[0]||{};
+    return `<div class="card" style="margin-bottom:1rem;padding:0;overflow:hidden">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:.8rem 1rem;background:var(--bg-input);border-bottom:1px solid var(--border)">
+        <div><strong class="mono" style="color:var(--accent)">${ref}</strong> <span style="color:var(--text-muted);font-size:.8rem;margin-left:.5rem">${F.date(first.date)} · Journal OD</span></div>
+        <div style="display:flex;gap:.5rem;align-items:center"><span class="badge green">Équilibrée</span><button class="btn btn-sm" onclick="deleteJournalEntry('${String(ref).replace(/'/g,"\'")}');setTimeout(()=>navigate('od'),50)">Supprimer</button></div>
+      </div>
+      <div style="overflow:auto"><table class="dt"><thead><tr><th style="padding-left:1rem">Compte</th><th>Intitulé</th><th>Libellé</th><th style="text-align:right">Débit</th><th style="text-align:right">Crédit</th></tr></thead><tbody>
+      ${lines.map(e=>`<tr><td class="mono" style="padding-left:1rem">${e.compte}</td><td style="color:var(--text-muted);font-size:.8rem">${planMap[e.compte]||'Compte non référencé'}</td><td>${e.libellé||''}</td><td style="text-align:right;color:var(--accent);font-family:monospace">${Number(e.débit||0)?F.money(e.débit):'—'}</td><td style="text-align:right;color:var(--blue);font-family:monospace">${Number(e.crédit||0)?F.money(e.crédit):'—'}</td></tr>`).join('')}
+      </tbody><tfoot><tr><td colspan="3" style="text-align:right;font-weight:700">Total OD</td><td style="text-align:right;font-family:monospace;font-weight:700;color:var(--accent)">${F.money(d)}</td><td style="text-align:right;font-family:monospace;font-weight:700;color:var(--blue)">${F.money(c)}</td></tr></tfoot></table></div></div>`;
+  }).join('');
+  return `<div class="ph"><div class="ph-l"><h1 class="ph-ttl">🧾 Opérations Diverses (OD)</h1><p class="ph-sub">Saisie manuelle des écritures de régularisation · ${refs.length} OD · ${rows.length} lignes</p></div><div class="ph-r"><button class="btn btn-p" onclick="openODEntry()">＋ Saisir une OD</button></div></div>
+  <div class="alert ${Math.abs(totalD-totalC)<0.01?'success':'error'}"><strong>${Math.abs(totalD-totalC)<0.01?'Journal OD équilibré':'Journal OD déséquilibré'}</strong> — Débit ${F.money(totalD)} · Crédit ${F.money(totalC)} · Écart ${F.money(Math.abs(totalD-totalC))}</div>
+  <div class="kpi-grid" style="margin-bottom:1rem"><div class="kpi"><div class="kpi-lbl">OD enregistrées</div><div class="kpi-val">${refs.length}</div></div><div class="kpi"><div class="kpi-lbl">Lignes comptables</div><div class="kpi-val">${rows.length}</div></div><div class="kpi"><div class="kpi-lbl">Total débit</div><div class="kpi-val">${F.money(totalD,true)}</div></div><div class="kpi"><div class="kpi-lbl">Total crédit</div><div class="kpi-val">${F.money(totalC,true)}</div></div></div>
+  ${cards||`<div class="card" style="text-align:center;padding:3rem;color:var(--text-muted)"><div style="font-size:2.5rem;margin-bottom:.75rem">🧾</div><strong>Aucune opération diverse</strong><p style="margin-top:.4rem">Cliquez sur « Saisir une OD » pour créer votre première écriture.</p></div>`}`;
+}
+function openODEntry(){
+  openJournalEntry();
+  const sel=document.getElementById('je-journal');
+  if(sel){sel.value='OD';sel.disabled=true;}
+  const sub=document.querySelector('#journal-modal .modal-sub');
+  if(sub)sub.textContent='Opération Diverse (OD) — saisie multi-lignes obligatoire et équilibrée';
 }
 
 /* ── GRAND LIVRE ─────────────────────────────────────────── */
@@ -1444,6 +1478,7 @@ const ROUTES={
   'dashboard':    ()=>pageDashboard(),
   'factures':     ()=>pageFactures(),
   'journal':      ()=>pageJournal(),
+  'od':           ()=>pageOD(),
   'balance':      ()=>pageBalance(),
   'employes':     ()=>pageEmployes(),
   'tva':          ()=>pageTVA(),
