@@ -1156,108 +1156,102 @@ function lineRow(desc,qty,prix){
 
 /* ── JOURNAL ÉCRITURES ──────────────────────────────────── */
 function pageJournal(){
-  const totalD=D.ecritures.reduce((s,e)=>s+(e.débit||0),0);
-  const totalC=D.ecritures.reduce((s,e)=>s+(e.crédit||0),0);
-  const planMap={};D.plan.forEach(c=>{planMap[c.compte]=c.libellé;});
+  const totalD=D.ecritures.reduce((s,e)=>s+Number(e.débit||0),0);
+  const totalC=D.ecritures.reduce((s,e)=>s+Number(e.crédit||0),0);
+  const planMap={};D.plan.forEach(c=>planMap[c.compte]=c.libellé);
   const jColors={VT:'green',AC:'amber',BQ:'blue',CA:'purple',OD:'gray',SA:'red'};
   return `
-<div class="ph">
-  <div class="ph-l"><h1 class="ph-ttl">Journal des écritures</h1><p class="ph-sub">${D.ecritures.length} écritures · Exercice ${new Date().getFullYear()}</p></div>
-  <div class="ph-r">
-    <button class="btn btn-s"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Excel</button>
-    <button class="btn btn-p" onclick="toast('Saisie manuelle — Module OD disponible en production','info')"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Saisir écriture</button>
-  </div>
-</div>
-<div class="alert success"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><strong>Journal équilibré</strong> — Total Débit = Total Crédit = ${F.money(totalD)}</div>
-<div style="display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap">
-  ${['Tous','VT — Ventes','AC — Achats','BQ — Banque','CA — Caisse','OD — Opérations Diverses'].map((j,i)=>`<button onclick="document.querySelectorAll('.jbtn').forEach(b=>{b.style.background='var(--bg-card)';b.style.color='var(--text-secondary)';b.style.fontWeight='400';b.style.borderColor='var(--border)'});this.style.background='var(--accent-muted)';this.style.color='var(--accent-light)';this.style.fontWeight='600';this.style.borderColor='var(--accent-border)'" class="jbtn" style="padding:.4rem .875rem;border-radius:99px;font-size:.8rem;border:1px solid ${i===0?'var(--accent-border)':'var(--border)'};background:${i===0?'var(--accent-muted)':'var(--bg-card)'};color:${i===0?'var(--accent-light)':'var(--text-secondary)'};cursor:pointer;font-family:inherit;font-weight:${i===0?600:400};transition:all .15s">${j}</button>`).join('')}
-</div>
-<div class="card" style="padding:0;overflow:hidden">
-  <div style="overflow-x:auto">
-    <table class="dt">
-      <thead><tr>
-        <th style="padding-left:1.25rem">Date</th><th>Référence</th><th>Journal</th>
-        <th>N° Compte</th><th>Intitulé compte</th><th>Libellé écriture</th>
-        <th style="text-align:right;color:var(--accent)">Débit (FCFA)</th>
-        <th style="text-align:right;color:var(--blue)">Crédit (FCFA)</th>
-      </tr></thead>
-      <tbody>
-        ${D.ecritures.map((e,i)=>{
-          const first=!D.ecritures.slice(0,i).some(p=>p.ref===e.ref);
-          return `<tr style="${first&&i>0?'border-top:2px solid var(--border-strong)':''}">
-            <td style="padding-left:1.25rem"><span style="font-size:.8rem;color:var(--text-muted)">${first?F.date(e.date):''}</span></td>
-            <td>${first?`<span class="mono" style="color:var(--accent);font-size:.75rem;font-weight:600">${e.ref}</span>`:''}</td>
-            <td>${first?`<span class="badge ${jColors[e.journal]||'gray'}">${e.journal}</span>`:''}</td>
-            <td><span class="mono" style="font-weight:500">${e.compte}</span></td>
-            <td style="font-size:.8rem;color:var(--text-muted)">${planMap[e.compte]||''}</td>
-            <td style="font-size:.8rem;color:var(--text-secondary)">${e.libellé}</td>
-            <td style="text-align:right">${e.débit>0?`<span class="mono" style="color:var(--accent);font-weight:500;font-size:.8125rem">${F.money(e.débit)}</span>`:'<span style="color:var(--text-muted)">—</span>'}</td>
-            <td style="text-align:right">${e.crédit>0?`<span class="mono" style="color:var(--blue);font-weight:500;font-size:.8125rem">${F.money(e.crédit)}</span>`:'<span style="color:var(--text-muted)">—</span>'}</td>
-          </tr>`;
-        }).join('')}
-      </tbody>
-      <tfoot>
-        <tr style="background:var(--bg-input);border-top:2px solid var(--border-strong)">
-          <td colspan="6" style="padding:.75rem 1.25rem;font-weight:700">TOTAUX</td>
-          <td style="text-align:right;padding:.75rem .875rem;font-weight:700;color:var(--accent);font-family:monospace">${F.money(totalD)}</td>
-          <td style="text-align:right;padding:.75rem .875rem;font-weight:700;color:var(--blue);font-family:monospace">${F.money(totalC)}</td>
-        </tr>
-      </tfoot>
-    </table>
-  </div>
-</div>`;
+<div class="ph"><div class="ph-l"><h1 class="ph-ttl">Journal des écritures</h1><p class="ph-sub">${D.ecritures.length} lignes · saisie comptable réelle et équilibrée</p></div>
+<div class="ph-r"><button class="btn btn-p" onclick="openJournalEntry()">＋ Saisir une écriture</button></div></div>
+<div class="alert ${Math.abs(totalD-totalC)<0.01?'success':'error'}"><strong>${Math.abs(totalD-totalC)<0.01?'Journal équilibré':'Journal déséquilibré'}</strong> — Débit ${F.money(totalD)} · Crédit ${F.money(totalC)} · Écart ${F.money(Math.abs(totalD-totalC))}</div>
+<div class="card" style="padding:0;overflow:hidden"><div style="overflow:auto"><table class="dt"><thead><tr><th style="padding-left:1.25rem">Date</th><th>Référence</th><th>Journal</th><th>N° Compte</th><th>Intitulé</th><th>Libellé</th><th style="text-align:right;color:var(--accent)">Débit</th><th style="text-align:right;color:var(--blue)">Crédit</th><th></th></tr></thead><tbody>
+${D.ecritures.map((e,i)=>`<tr><td style="padding-left:1.25rem">${F.date(e.date)}</td><td><span class="mono" style="color:var(--accent);font-weight:600">${e.ref||''}</span></td><td><span class="badge ${jColors[e.journal]||'gray'}">${e.journal||''}</span></td><td class="mono">${e.compte}</td><td style="color:var(--text-muted);font-size:.8rem">${planMap[e.compte]||'Compte non référencé'}</td><td>${e.libellé||''}</td><td style="text-align:right;color:var(--accent);font-family:monospace">${Number(e.débit||0)?F.money(e.débit):'—'}</td><td style="text-align:right;color:var(--blue);font-family:monospace">${Number(e.crédit||0)?F.money(e.crédit):'—'}</td><td><button class="btn btn-sm" onclick="deleteJournalEntry('${String(e.ref||'').replace(/'/g,"\\'")}')">Suppr.</button></td></tr>`).join('')}
+</tbody><tfoot><tr style="background:var(--bg-input);border-top:2px solid var(--border-strong)"><td colspan="6" style="padding:.75rem 1.25rem;font-weight:700">TOTAUX</td><td style="text-align:right;color:var(--accent);font-family:monospace;font-weight:700">${F.money(totalD)}</td><td style="text-align:right;color:var(--blue);font-family:monospace;font-weight:700">${F.money(totalC)}</td><td></td></tr></tfoot></table></div></div>`;
+}
+
+function openJournalEntry(){
+  document.getElementById('journal-modal')?.remove();
+  const opts=D.plan.map(p=>`<option value="${p.compte}">${p.compte} — ${p.libellé}</option>`).join('');
+  document.body.insertAdjacentHTML('beforeend',`<div id="journal-modal" class="modal-backdrop" onclick="if(event.target===this)this.remove()"><div class="modal-card" style="max-width:980px"><div class="modal-head"><div><div class="modal-title">Nouvelle écriture comptable</div><div class="modal-sub">Saisie multi-lignes — l'écriture doit être équilibrée</div></div><button class="btn btn-sm" onclick="this.closest('.modal-backdrop').remove()">Fermer</button></div>
+<div class="fgrid3"><div class="fg"><label class="fl">Date *</label><input id="je-date" class="fc" type="date" value="${new Date().toISOString().slice(0,10)}"></div><div class="fg"><label class="fl">Journal *</label><select id="je-journal" class="fc"><option>OD</option><option>VT</option><option>AC</option><option>BQ</option><option>CA</option><option>SA</option></select></div><div class="fg"><label class="fl">Référence</label><input id="je-ref" class="fc" value="OD-${String(Date.now()).slice(-6)}"></div></div>
+<div class="card" style="padding:0;margin-top:1rem;overflow:hidden"><table class="dt"><thead><tr><th>Compte</th><th>Libellé</th><th style="width:180px;text-align:right">Débit</th><th style="width:180px;text-align:right">Crédit</th><th></th></tr></thead><tbody id="je-lines"></tbody></table></div>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-top:1rem"><button class="btn btn-s" onclick="addJournalLine()">＋ Ajouter une ligne</button><div id="je-status" style="font-weight:700">Débit 0 FCFA · Crédit 0 FCFA</div></div>
+<div style="display:flex;justify-content:flex-end;gap:.5rem;margin-top:1rem"><button class="btn btn-s" onclick="this.closest('.modal-backdrop').remove()">Annuler</button><button class="btn btn-p" onclick="saveJournalEntry()">Enregistrer l'écriture</button></div></div></div>`);
+  addJournalLine();addJournalLine();
+}
+function addJournalLine(){
+  const body=document.getElementById('je-lines');if(!body)return;
+  const opts=D.plan.map(p=>`<option value="${p.compte}">${p.compte} — ${p.libellé}</option>`).join('');
+  body.insertAdjacentHTML('beforeend',`<tr class="je-line"><td><select class="fc je-compte">${opts}</select></td><td><input class="fc je-libelle" placeholder="Libellé"></td><td><input class="fc je-debit" type="number" min="0" step="0.01" value="0" oninput="updateJournalTotals()"></td><td><input class="fc je-credit" type="number" min="0" step="0.01" value="0" oninput="updateJournalTotals()"></td><td><button class="btn btn-sm" onclick="this.closest('tr').remove();updateJournalTotals()">×</button></td></tr>`);
+}
+function updateJournalTotals(){
+  let d=0,c=0;document.querySelectorAll('.je-line').forEach(r=>{d+=Number(r.querySelector('.je-debit')?.value||0);c+=Number(r.querySelector('.je-credit')?.value||0)});
+  const el=document.getElementById('je-status');if(el){el.textContent=`Débit ${F.money(d)} · Crédit ${F.money(c)} · Écart ${F.money(Math.abs(d-c))}`;el.style.color=Math.abs(d-c)<0.01?'var(--accent)':'var(--red)';}
+}
+function saveJournalEntry(){
+  const date=document.getElementById('je-date')?.value, journal=document.getElementById('je-journal')?.value, ref=document.getElementById('je-ref')?.value.trim();
+  const rows=[...document.querySelectorAll('.je-line')].map(r=>({compte:r.querySelector('.je-compte')?.value,libellé:r.querySelector('.je-libelle')?.value.trim(),débit:Number(r.querySelector('.je-debit')?.value||0),crédit:Number(r.querySelector('.je-credit')?.value||0)})).filter(r=>r.débit>0||r.crédit>0);
+  const d=rows.reduce((s,r)=>s+r.débit,0),c=rows.reduce((s,r)=>s+r.crédit,0);
+  if(!date||!ref){toast('Date et référence obligatoires.','error');return;}
+  if(rows.length<2){toast('Il faut au moins deux lignes.','error');return;}
+  if(Math.abs(d-c)>0.01){toast('Écriture déséquilibrée : le débit doit être égal au crédit.','error');return;}
+  if(rows.some(r=>!r.libellé)){toast('Chaque ligne doit avoir un libellé.','error');return;}
+  rows.forEach(r=>D.ecritures.unshift({date,ref,compte:r.compte,libellé:r.libellé,débit:r.débit,crédit:r.crédit,journal}));
+  persistDB();document.getElementById('journal-modal')?.remove();toast('Écriture enregistrée et équilibrée.','success');navigate('journal');
+}
+function deleteJournalEntry(ref){
+  if(!ref)return;if(!confirm(`Supprimer toutes les lignes de ${ref} ?`))return;
+  D.ecritures=D.ecritures.filter(e=>e.ref!==ref);persistDB();navigate('journal');toast(`Écriture ${ref} supprimée.`,'success');
+}
+
+/* ── GRAND LIVRE ─────────────────────────────────────────── */
+function pageGrandLivre(){
+  const planMap={}; D.plan.forEach(c=>planMap[c.compte]=c.libellé);
+  const comptes=[...new Set(D.ecritures.map(e=>String(e.compte)))].sort();
+  const selected=(document.getElementById('gl-compte')?.value||'').trim();
+  const data=selected?D.ecritures.filter(e=>String(e.compte)===selected):D.ecritures;
+  const groups={};
+  data.forEach(e=>{const c=String(e.compte);(groups[c]||(groups[c]=[])).push(e);});
+  let totalD=0,totalC=0,html='';
+  Object.keys(groups).sort().forEach(compte=>{
+    let solde=0, md=0, mc=0;
+    const rows=groups[compte].map(e=>{
+      const d=Number(e.débit||0), c=Number(e.crédit||0); md+=d; mc+=c; solde+=d-c;
+      totalD+=d; totalC+=c;
+      return `<tr>
+        <td>${F.date(e.date)}</td><td><span class="mono" style="color:var(--accent);font-weight:600">${e.ref||''}</span></td>
+        <td>${e.journal||''}</td><td>${e.libellé||''}</td>
+        <td style="text-align:right;color:var(--accent);font-family:monospace">${d?F.money(d):'—'}</td>
+        <td style="text-align:right;color:var(--blue);font-family:monospace">${c?F.money(c):'—'}</td>
+        <td style="text-align:right;font-family:monospace;font-weight:600">${F.money(solde)}</td>
+      </tr>`;
+    }).join('');
+    html+=`<tr style="background:var(--accent-muted);border-top:2px solid var(--border-strong)"><td colspan="7" style="padding:.7rem .875rem;font-weight:700"><span class="mono" style="color:var(--accent)">${compte}</span> — ${planMap[compte]||'Compte non référencé'}</td></tr>${rows}<tr style="background:var(--bg-input)"><td colspan="4" style="padding:.6rem .875rem;text-align:right;font-weight:700">Total compte ${compte}</td><td style="text-align:right;font-family:monospace;font-weight:700;color:var(--accent)">${F.money(md)}</td><td style="text-align:right;font-family:monospace;font-weight:700;color:var(--blue)">${F.money(mc)}</td><td style="text-align:right;font-family:monospace;font-weight:700">${F.money(md-mc)}</td></tr>`;
+  });
+  return `<div class="ph"><div class="ph-l"><h1 class="ph-ttl">📚 Grand Livre</h1><p class="ph-sub">Détail chronologique des mouvements par compte · Exercice ${new Date().getFullYear()}</p></div><div class="ph-r"><button class="btn btn-s" onclick="window.print()">Imprimer</button></div></div>
+  <div class="card" style="margin-bottom:1rem"><div class="fgrid2"><div class="fg"><label class="fl">Compte</label><select id="gl-compte" class="fc" onchange="navigate('grand-livre')"><option value="">Tous les comptes</option>${comptes.map(c=>`<option value="${c}" ${c===selected?'selected':''}>${c} — ${planMap[c]||''}</option>`).join('')}</select></div><div style="display:flex;align-items:end;color:var(--text-muted);font-size:.82rem">${data.length} mouvement(s) · Débit ${F.money(totalD)} · Crédit ${F.money(totalC)}</div></div></div>
+  <div class="card" style="padding:0;overflow:hidden"><div style="overflow:auto"><table class="dt"><thead><tr><th style="padding-left:1.25rem">Date</th><th>Référence</th><th>Journal</th><th>Libellé</th><th style="text-align:right;color:var(--accent)">Débit</th><th style="text-align:right;color:var(--blue)">Crédit</th><th style="text-align:right">Solde</th></tr></thead><tbody>${html||`<tr><td colspan="7" style="padding:2rem;text-align:center;color:var(--text-muted)">Aucune écriture pour ce compte.</td></tr>`}</tbody><tfoot><tr style="background:var(--bg-input);border-top:2px solid var(--border-strong)"><td colspan="4" style="padding:.75rem 1.25rem;font-weight:700">TOTAUX GÉNÉRAUX</td><td style="text-align:right;font-family:monospace;font-weight:700;color:var(--accent)">${F.money(totalD)}</td><td style="text-align:right;font-family:monospace;font-weight:700;color:var(--blue)">${F.money(totalC)}</td><td></td></tr></tfoot></table></div></div>`;
 }
 
 /* ── BALANCE ─────────────────────────────────────────────── */
-function pageBalance(){
-  const clNames={1:'Ressources durables',2:'Actif immobilisé',3:'Stocks',4:'Comptes de tiers',5:'Trésorerie',6:'Charges',7:'Produits'};
-  let rows='',lastC=0,totD=0,totC=0,totSD=0,totSC=0;
-  D.plan.forEach(p=>{
-    if(p.classe!==lastC){
-      rows+=`<tr style="background:rgba(16,185,129,.04);border-top:2px solid var(--border-strong)"><td colspan="6" style="padding:.5rem .875rem;font-weight:700;font-size:.8125rem">CLASSE ${p.classe} — ${clNames[p.classe]||''}</td></tr>`;
-      lastC=p.classe;
-    }
-    const seed=p.compte.split('').reduce((s,c)=>s+c.charCodeAt(0),0);
-    const solde=Math.round((seed*1234567)%85000000+500000);
-    const isD=[1,2,3,5,6].includes(p.classe);
-    const mvD=isD?solde*1.8:solde*0.3, mvC=isD?solde*0.3:solde*1.8;
-    const sD=isD?solde:0, sC=isD?0:solde;
-    totD+=mvD;totC+=mvC;totSD+=sD;totSC+=sC;
-    rows+=`<tr>
-      <td><span class="mono" style="font-weight:500">${p.compte}</span></td>
-      <td style="font-size:.8rem;color:var(--text-secondary)">${p.libellé}</td>
-      <td style="text-align:right;font-family:monospace;font-size:.8rem">${mvD>0?F.money(Math.round(mvD)):'—'}</td>
-      <td style="text-align:right;font-family:monospace;font-size:.8rem">${mvC>0?F.money(Math.round(mvC)):'—'}</td>
-      <td style="text-align:right;font-family:monospace;font-size:.8rem;color:${sD>0?'var(--accent)':'var(--text-muted)'}">${sD>0?F.money(sD):'—'}</td>
-      <td style="text-align:right;font-family:monospace;font-size:.8rem;color:${sC>0?'var(--blue)':'var(--text-muted)'}">${sC>0?F.money(sC):'—'}</td>
-    </tr>`;
-  });
-  return `
-<div class="ph">
-  <div class="ph-l"><h1 class="ph-ttl">Balance Générale</h1><p class="ph-sub">Au ${F.date(new Date().toISOString(),'long')} · Système Normal OHADA</p></div>
-  <div class="ph-r"><button class="btn btn-s">Imprimer</button><button class="btn btn-s">Excel</button></div>
-</div>
-<div class="alert success" style="margin-bottom:1.25rem"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><strong>Balance équilibrée</strong> — Total Débit = Total Crédit = ${F.money(Math.round(totD))}</div>
-<div class="card" style="padding:0;overflow:hidden">
-  <div style="overflow-x:auto">
-    <table class="dt" style="font-size:.8rem">
-      <thead><tr style="background:var(--bg-input)">
-        <th style="padding:.625rem .875rem">N° Compte</th><th>Intitulé</th>
-        <th style="text-align:right;color:var(--accent)">Mvt Débit</th><th style="text-align:right;color:var(--blue)">Mvt Crédit</th>
-        <th style="text-align:right;color:var(--accent)">Solde Débiteur</th><th style="text-align:right;color:var(--blue)">Solde Créditeur</th>
-      </tr></thead>
-      <tbody>${rows}</tbody>
-      <tfoot><tr style="background:var(--bg-input);border-top:2px solid var(--border-strong)">
-        <td colspan="2" style="padding:.75rem .875rem;font-weight:700">TOTAUX GÉNÉRAUX</td>
-        <td style="text-align:right;padding:.75rem .875rem;font-weight:700;color:var(--accent);font-family:monospace">${F.money(Math.round(totD))}</td>
-        <td style="text-align:right;padding:.75rem .875rem;font-weight:700;color:var(--blue);font-family:monospace">${F.money(Math.round(totC))}</td>
-        <td style="text-align:right;padding:.75rem .875rem;font-weight:700;color:var(--accent);font-family:monospace">${F.money(Math.round(totSD))}</td>
-        <td style="text-align:right;padding:.75rem .875rem;font-weight:700;color:var(--blue);font-family:monospace">${F.money(Math.round(totSC))}</td>
-      </tr></tfoot>
-    </table>
-  </div>
-</div>`;
+function computeBalances(){
+  const map={};D.ecritures.forEach(e=>{const c=String(e.compte);if(!map[c])map[c]={debit:0,credit:0};map[c].debit+=Number(e.débit||0);map[c].credit+=Number(e.crédit||0);});return map;
 }
+function pageBalance(){
+  const map=computeBalances(), planMap={};D.plan.forEach(p=>planMap[p.compte]=p);
+  const accounts=[...new Set([...D.plan.map(p=>p.compte),...Object.keys(map)])].sort();let rows='',totD=0,totC=0,totSD=0,totSC=0;
+  accounts.forEach(c=>{const p=planMap[c]||{compte:c,libellé:'Compte non référencé',classe:Number(c[0])||0},m=map[c]||{debit:0,credit:0};const sol=m.debit-m.credit,sd=Math.max(sol,0),sc=Math.max(-sol,0);totD+=m.debit;totC+=m.credit;totSD+=sd;totSC+=sc;rows+=`<tr><td class="mono">${c}</td><td>${p.libellé}</td><td style="text-align:right;font-family:monospace">${m.debit?F.money(m.debit):'—'}</td><td style="text-align:right;font-family:monospace">${m.credit?F.money(m.credit):'—'}</td><td style="text-align:right;color:var(--accent);font-family:monospace">${sd?F.money(sd):'—'}</td><td style="text-align:right;color:var(--blue);font-family:monospace">${sc?F.money(sc):'—'}</td></tr>`;});
+  const balanced=Math.abs(totD-totC)<0.01;
+  return `<div class="ph"><div class="ph-l"><h1 class="ph-ttl">Balance Générale</h1><p class="ph-sub">Calculée à partir des écritures saisies · Système Normal OHADA</p></div><div class="ph-r"><button class="btn btn-s" onclick="window.print()">Imprimer</button></div></div><div class="alert ${balanced?'success':'error'}"><strong>${balanced?'Balance équilibrée':'Balance à contrôler'}</strong> — Débit ${F.money(totD)} · Crédit ${F.money(totC)} · Écart ${F.money(Math.abs(totD-totC))}</div><div class="card" style="padding:0;overflow:hidden"><div style="overflow:auto"><table class="dt"><thead><tr><th>N° Compte</th><th>Intitulé</th><th style="text-align:right">Mvt Débit</th><th style="text-align:right">Mvt Crédit</th><th style="text-align:right">Solde Débiteur</th><th style="text-align:right">Solde Créditeur</th></tr></thead><tbody>${rows||'<tr><td colspan="6" style="padding:2rem;text-align:center">Aucune écriture.</td></tr>'}</tbody><tfoot><tr><td colspan="2"><strong>TOTAUX</strong></td><td style="text-align:right;font-family:monospace;font-weight:700">${F.money(totD)}</td><td style="text-align:right;font-family:monospace;font-weight:700">${F.money(totC)}</td><td style="text-align:right;font-family:monospace;font-weight:700">${F.money(totSD)}</td><td style="text-align:right;font-family:monospace;font-weight:700">${F.money(totSC)}</td></tr></tfoot></table></div></div>`;
+}
+function pageBilan(){
+  const m=computeBalances();const val=c=>{const x=m[c]||{debit:0,credit:0};return x.debit-x.credit};
+  const actifs=[['21','Immobilisations'],['3','Stocks'],['411000','Clients'],['5','Trésorerie']];const passifs=[['10','Capitaux propres'],['16','Emprunts'],['401000','Fournisseurs'],['4','Dettes fiscales et sociales']];
+  const sumPrefix=p=>Object.keys(m).filter(c=>c.startsWith(p)).reduce((s,c)=>s+val(c),0);const act=actifs.reduce((s,[p])=>s+(p.length>1?sumPrefix(p):0),0);const actif=act;const pass=passifs.reduce((s,[p])=>s+sumPrefix(p),0);const resultat=sumPrefix('7')-sumPrefix('6');
+  const line=(label,v)=>`<tr><td style="padding:.7rem">${label}</td><td style="padding:.7rem;text-align:right;font-family:monospace;font-weight:600">${F.money(Math.abs(v))}</td></tr>`;
+  return `<div class="ph"><div class="ph-l"><h1 class="ph-ttl">Bilan Comptable</h1><p class="ph-sub">Situation calculée automatiquement à partir des écritures</p></div><div class="ph-r"><button class="btn btn-s" onclick="window.print()">Imprimer</button></div></div><div class="alert info">Le bilan est alimenté par le journal : toute nouvelle écriture équilibrée met à jour cette page automatiquement.</div><div class="g12" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem"><div class="card"><div class="card-title">ACTIF</div><table style="width:100%;margin-top:.75rem"><tbody>${line('Immobilisations',sumPrefix('2'))}${line('Stocks',sumPrefix('3'))}${line('Clients',sumPrefix('411'))}${line('Trésorerie',sumPrefix('5'))}</tbody><tfoot><tr><td style="padding:.8rem;font-weight:800">TOTAL ACTIF</td><td style="text-align:right;font-family:monospace;font-weight:800">${F.money(actif)}</td></tr></tfoot></table></div><div class="card"><div class="card-title">PASSIF</div><table style="width:100%;margin-top:.75rem"><tbody>${line('Capitaux propres',sumPrefix('1'))}${line('Fournisseurs',sumPrefix('401'))}${line('Dettes fiscales et sociales',sumPrefix('4'))}${line('Résultat de l’exercice',resultat)}</tbody><tfoot><tr><td style="padding:.8rem;font-weight:800">TOTAL PASSIF</td><td style="text-align:right;font-family:monospace;font-weight:800">${F.money(Math.abs(pass)+Math.abs(resultat))}</td></tr></tfoot></table></div></div>`;
+}
+function pageResultat(){const m=computeBalances();const sumPrefix=p=>Object.keys(m).filter(c=>c.startsWith(p)).reduce((s,c)=>s+(m[c].credit-m[c].debit),0);const produits=sumPrefix('7'),charges=sumPrefix('6');return `<div class="ph"><div class="ph-l"><h1 class="ph-ttl">Compte de Résultat</h1><p class="ph-sub">Produits, charges et résultat calculés depuis le journal</p></div></div><div class="card"><table style="width:100%;border-collapse:collapse"><tr><td style="padding:.8rem">Produits (classe 7)</td><td style="text-align:right;font-family:monospace">${F.money(produits)}</td></tr><tr><td style="padding:.8rem">Charges (classe 6)</td><td style="text-align:right;font-family:monospace">${F.money(charges)}</td></tr><tr style="border-top:2px solid var(--border-strong)"><td style="padding:.9rem;font-weight:800">RÉSULTAT</td><td style="text-align:right;font-family:monospace;font-weight:800;color:${produits-charges>=0?'var(--accent)':'var(--red)'}">${F.money(produits-charges)}</td></tr></table></div>`;}
 
 /* ── EMPLOYÉS ─────────────────────────────────────────────── */
 function pageEmployes(){
@@ -1385,6 +1379,16 @@ function pageTVA(){
 </div>`;
 }
 
+function pagePaiements(direction='recu'){
+  const key=direction==='emis'?'adel_payments_emis':'adel_payments_recus';let rows=[];try{rows=JSON.parse(localStorage.getItem(key)||'[]')}catch(e){}
+  const title=direction==='emis'?'Paiements émis':'Paiements reçus',sub=direction==='emis'?'Décaissements fournisseurs':'Encaissements clients';
+  const total=rows.reduce((s,r)=>s+Number(r.montant||0),0);
+  return `<div class="ph"><div class="ph-l"><h1 class="ph-ttl">💳 ${title}</h1><p class="ph-sub">${sub} · ${rows.length} opération(s)</p></div><div class="ph-r"><button class="btn btn-p" onclick="openPayment('${direction}')">＋ Nouveau paiement</button></div></div><div class="kpi-grid" style="margin-bottom:1rem"><div class="kpi"><div class="kpi-lbl">Opérations</div><div class="kpi-val">${rows.length}</div></div><div class="kpi"><div class="kpi-lbl">Total</div><div class="kpi-val">${F.money(total,true)}</div></div></div><div class="card" style="padding:0;overflow:hidden"><div style="overflow:auto"><table class="dt"><thead><tr><th>Date</th><th>Référence</th><th>Tiers</th><th>Mode</th><th style="text-align:right">Montant</th><th></th></tr></thead><tbody>${rows.map((r,i)=>`<tr><td>${F.date(r.date)}</td><td class="mono">${r.ref}</td><td>${r.tiers}</td><td>${r.mode}</td><td style="text-align:right;font-family:monospace">${F.money(r.montant)}</td><td><button class="btn btn-sm" onclick="deletePayment('${direction}',${i})">Suppr.</button></td></tr>`).join('')||'<tr><td colspan="6" style="padding:2rem;text-align:center;color:var(--text-muted)">Aucun paiement enregistré.</td></tr>'}</tbody></table></div></div>`;
+}
+function openPayment(direction){document.getElementById('payment-modal')?.remove();const compte=direction==='emis'?'401000':'411000',contre=direction==='emis'?'512100':'512100';document.body.insertAdjacentHTML('beforeend',`<div id="payment-modal" class="modal-backdrop" onclick="if(event.target===this)this.remove()"><div class="modal-card" style="max-width:620px"><div class="modal-head"><div><div class="modal-title">${direction==='emis'?'Nouveau paiement fournisseur':'Nouvel encaissement client'}</div><div class="modal-sub">Une écriture comptable équilibrée sera créée automatiquement.</div></div><button class="btn btn-sm" onclick="this.closest('.modal-backdrop').remove()">Fermer</button></div><div class="fgrid2"><div class="fg"><label class="fl">Date *</label><input id="pay-date" class="fc" type="date" value="${new Date().toISOString().slice(0,10)}"></div><div class="fg"><label class="fl">Référence *</label><input id="pay-ref" class="fc" value="${direction==='emis'?'PAY':'ENC'}-${String(Date.now()).slice(-6)}"></div></div><div class="fg"><label class="fl">Tiers *</label><input id="pay-tiers" class="fc" placeholder="Nom du fournisseur/client"></div><div class="fgrid2"><div class="fg"><label class="fl">Mode</label><select id="pay-mode" class="fc"><option>Virement</option><option>Chèque</option><option>Espèces</option></select></div><div class="fg"><label class="fl">Montant FCFA *</label><input id="pay-montant" class="fc" type="number" min="0.01" step="0.01"></div></div><div style="display:flex;justify-content:flex-end;gap:.5rem"><button class="btn btn-s" onclick="this.closest('.modal-backdrop').remove()">Annuler</button><button class="btn btn-p" onclick="savePayment('${direction}','${compte}','${contre}')">Enregistrer</button></div></div></div>`)}
+function savePayment(direction,compte,contre){const date=document.getElementById('pay-date')?.value,ref=document.getElementById('pay-ref')?.value.trim(),tiers=document.getElementById('pay-tiers')?.value.trim(),mode=document.getElementById('pay-mode')?.value,montant=Number(document.getElementById('pay-montant')?.value||0);if(!date||!ref||!tiers||montant<=0){toast('Tous les champs obligatoires doivent être renseignés.','error');return;}const key=direction==='emis'?'adel_payments_emis':'adel_payments_recus';let rows=[];try{rows=JSON.parse(localStorage.getItem(key)||'[]')}catch(e){}rows.unshift({date,ref,tiers,mode,montant});localStorage.setItem(key,JSON.stringify(rows));if(direction==='emis'){D.ecritures.unshift({date,ref,compte:'401000',libellé:`Règlement ${tiers}`,débit:montant,crédit:0,journal:'BQ'},{date,ref,compte:'512100',libellé:`Paiement ${tiers}`,débit:0,crédit:montant,journal:'BQ'});}else{D.ecritures.unshift({date,ref,compte:'512100',libellé:`Encaissement ${tiers}`,débit:montant,crédit:0,journal:'BQ'},{date,ref,compte:'411000',libellé:`Règlement ${tiers}`,débit:0,crédit:montant,journal:'BQ'});}persistDB();document.getElementById('payment-modal')?.remove();toast('Paiement enregistré et comptabilisé.','success');navigate(direction==='emis'?'paiements-achat':'paiements');}
+function deletePayment(direction,i){const key=direction==='emis'?'adel_payments_emis':'adel_payments_recus';let rows=[];try{rows=JSON.parse(localStorage.getItem(key)||'[]')}catch(e){}const r=rows[i];if(!r)return;rows.splice(i,1);localStorage.setItem(key,JSON.stringify(rows));D.ecritures=D.ecritures.filter(e=>e.ref!==r.ref);persistDB();navigate(direction==='emis'?'paiements-achat':'paiements');}
+
 /* ── MODULES OPÉRATIONNELS ─────────────────────────────── */
 function pageGeneric(title,subtitle,icon='📊',key='module'){
   const storeKey='adel_module_'+key;
@@ -1444,15 +1448,15 @@ const ROUTES={
   'employes':     ()=>pageEmployes(),
   'tva':          ()=>pageTVA(),
   'plan-comptable':()=>pageBalance(), // réutilise le format
-  'bilan':        ()=>pageGeneric('Bilan Comptable','Situation financière','⚖️','bilan'),
-  'resultat':     ()=>pageGeneric('Compte de Résultat','Synthèse des produits et charges','📈','resultat'),
-  'grand-livre':  ()=>pageGeneric('Grand Livre','Détail des opérations par compte','📚','grand-livre'),
+  'bilan':        ()=>pageBilan(),
+  'resultat':     ()=>pageResultat(),
+  'grand-livre':  ()=>pageGrandLivre(),
   'devis':        ()=>pageDevis(),
   'avoirs':       ()=>pageGeneric('Avoirs','Notes de crédit clients','↩️','avoirs'),
-  'paiements':    ()=>pageGeneric('Paiements reçus','Encaissements clients','💰','paiements'),
+  'paiements':    ()=>pagePaiements('recu'),
   'commandes-achat':()=>pageGeneric('Bons de commande','Achats fournisseurs','🛒','commandes-achat'),
   'factures-fournisseur':()=>pageGeneric('Factures fournisseurs','Dettes fournisseurs','🧾','factures-fournisseur'),
-  'paiements-achat':()=>pageGeneric('Paiements émis','Décaissements fournisseurs','💳','paiements-achat'),
+  'paiements-achat':()=>pagePaiements('emis'),
   'clients':      ()=>pageClients(),
   'fournisseurs': ()=>pageFournisseurs(),
   'banques':      ()=>pageBanques(),
