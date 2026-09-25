@@ -8,7 +8,7 @@
 <meta name="description" content="ADEL S.A.S. — ERP interne de gestion comptable, commerciale et financière OHADA">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -1982,11 +1982,20 @@ function navigate(page, push=true, sync=true){
     });
 
     // Init graphiques après rendu
-    if(page==='dashboard'){
-      setTimeout(()=>{
-        buildChartCA();buildChartTres();buildChartDoughnut();buildSparklines();animateKPIs();
-      },50);
+ if(page==='dashboard'){
+  setTimeout(()=>{
+    if(typeof Chart === 'undefined'){
+      console.warn('Chart.js non disponible.');
+      return;
     }
+
+    buildChartCA();
+    buildChartTres();
+    buildChartDoughnut();
+    buildSparklines();
+    animateKPIs();
+  },300);
+}
     if(sync && page==='clients'){
       loadClientsFromSupabase().then(ok=>{if(ok && currentPage==='clients')navigate(page,false,false);});
     }
