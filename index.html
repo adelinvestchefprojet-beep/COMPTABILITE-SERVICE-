@@ -3,21 +3,10 @@
 <html lang="fr" id="html-root" data-theme=""><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>ERP OHADA Pro — Gestion Comptable</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2712%27 fill=%27%2301823F%27/%3E%3Cpath d=%27M18 44V20h28v7H26v4h17v7H26v6z%27 fill=%27%23fff%27/%3E%3Ccircle cx=%2750%27 cy=%2714%27 r=%276%27 fill=%27%23F2C94C%27/%3E%3C/svg%3E">
+<title>ADEL S.A.S. — Gestion Comptable OHADA</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
-<script>
-/* Fallback Chart.js: certains hébergeurs/proxy peuvent bloquer cdnjs. */
-(function(){
-  if (window.Chart) return;
-  var s=document.createElement('script');
-  s.src='https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js';
-  s.async=false;
-  document.head.appendChild(s);
-})();
-</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <style>
@@ -25,9 +14,9 @@
    DESIGN SYSTEM — TOKENS & VARIABLES
 ═══════════════════════════════════════════════════════════ */
 :root {
-  --bg-base:#071B14;--bg-sidebar:#063B27;--bg-card:#0D2B20;--bg-card-hover:#123A29;--bg-input:#0A2419;--bg-overlay:rgba(4,16,11,.9);
-  --accent:#01823F;--accent-light:#39B86A;--accent-muted:rgba(1,130,63,.14);--accent-border:rgba(1,130,63,.34);
-  --amber:#F2C94C;--amber-muted:rgba(242,201,76,.14);--red:#D12B2F;--red-muted:rgba(209,43,47,.16);
+  --bg-base:#071B14;--bg-sidebar:#052E21;--bg-card:#0E2A20;--bg-card-hover:#153726;--bg-input:#0B2418;--bg-overlay:rgba(4,16,11,.9);
+  --accent:#0E7C3F;--accent-light:#3FC97A;--accent-muted:rgba(74,222,128,.14);--accent-border:rgba(74,222,128,.32);
+  --amber:#D9A404;--amber-muted:rgba(217,119,6,.14);--red:#D42027;--red-muted:rgba(220,38,38,.16);
   --blue:#3B82F6;--blue-muted:rgba(59,130,246,.12);--purple:#8B5CF6;--purple-muted:rgba(139,92,246,.12);
   --text-primary:#F4FAF6;--text-secondary:#93B0A2;--text-muted:#56776A;
   --border:rgba(190,220,205,.09);--border-strong:rgba(190,220,205,.17);--border-accent:rgba(74,222,128,.3);
@@ -38,11 +27,11 @@
   --z-sb:100;--z-top:200;--z-modal:300;--z-toast:400;
 }
 [data-theme="light"]{
-  --bg-base:#F7FAF8;--bg-sidebar:#063B27;--bg-card:#fff;--bg-card-hover:#EEF6F1;--bg-input:#EEF4F0;
+  --bg-base:#F4F9F6;--bg-sidebar:#052E21;--bg-card:#fff;--bg-card-hover:#EEF6F1;--bg-input:#EEF4F0;
   --text-primary:#0B2018;--text-secondary:#3E5D4F;--text-muted:#8AA79A;
   --border:rgba(6,36,25,.08);--border-strong:rgba(6,36,25,.15);--shadow:0 4px 16px rgba(6,36,25,.08);
-  --accent:#01823F;--accent-light:#01823F;--accent-muted:rgba(1,130,63,.10);--accent-border:rgba(1,130,63,.28);
-  --red:#B91C1C;--red-muted:rgba(185,28,28,.1);
+  --accent:#0E7C3F;--accent-light:#0E7C3F;--accent-muted:rgba(21,128,61,.1);--accent-border:rgba(21,128,61,.28);
+  --red:#D42027;--red-muted:rgba(185,28,28,.1);
 }
 
 /* ── Reset ── */
@@ -62,9 +51,9 @@ button,input,select,textarea{font-family:inherit}
 .sidebar{position:fixed;top:env(safe-area-inset-top,0px);left:0;width:var(--sidebar-w);height:calc(100vh - env(safe-area-inset-top,0px));background:var(--bg-sidebar);border-right:1px solid var(--border);z-index:var(--z-sb);display:flex;flex-direction:column;transition:width var(--tr);overflow:hidden}
 .sidebar.collapsed{width:64px}
 .sb-logo{display:flex;align-items:center;gap:10px;padding:0 1rem;height:var(--topbar-h);border-bottom:1px solid var(--border);flex-shrink:0}
-.logo-mark{width:36px;height:36px;background:linear-gradient(145deg,var(--accent-light),var(--accent) 60%,#006B34);border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.75rem;color:#fff;letter-spacing:-.5px;flex-shrink:0;box-shadow:0 2px 10px rgba(1,130,63,.4),inset 0 1px 0 rgba(255,255,255,.15)}
+.logo-mark{width:36px;height:36px;background:linear-gradient(145deg,var(--accent-light),var(--accent) 60%,#0B4A2C);border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.75rem;color:#fff;letter-spacing:-.5px;flex-shrink:0;box-shadow:0 2px 10px rgba(21,128,61,.4),inset 0 1px 0 rgba(255,255,255,.15)}
 .sb-logo{position:relative}
-.sb-logo::after{content:'';position:absolute;left:0;right:0;bottom:-1px;height:2px;background:linear-gradient(90deg,var(--accent) 0%,var(--accent) 62%,var(--red) 82%,#F2C94C 100%)}
+.sb-logo::after{content:'';position:absolute;left:0;right:0;bottom:-1px;height:2px;background:linear-gradient(90deg,var(--accent) 0%,var(--accent) 60%,var(--red) 100%)}
 .logo-txt{font-weight:700;font-size:.9375rem;color:var(--text-primary);white-space:nowrap;transition:opacity var(--tr)}
 .logo-sub{font-size:.6875rem;color:var(--text-muted);white-space:nowrap}
 .sidebar.collapsed .logo-txt,.sidebar.collapsed .logo-sub{opacity:0;pointer-events:none}
@@ -172,7 +161,7 @@ button,input,select,textarea{font-family:inherit}
 /* ── Buttons ── */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:0 .875rem;height:34px;border-radius:var(--r-sm);font-size:.8125rem;font-weight:500;cursor:pointer;transition:all var(--tr-f);border:1px solid transparent;outline:none;white-space:nowrap;font-family:inherit}
 .btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2}
-.btn-p{background:linear-gradient(135deg,var(--accent-light),var(--accent));color:#fff;border-color:var(--accent);box-shadow:0 2px 8px rgba(1,130,63,.35)}.btn-p:hover{filter:brightness(1.08);transform:translateY(-1px);box-shadow:0 4px 12px rgba(1,130,63,.45)}
+.btn-p{background:linear-gradient(135deg,var(--accent-light),var(--accent));color:#fff;border-color:var(--accent);box-shadow:0 2px 8px rgba(21,128,61,.35)}.btn-p:hover{filter:brightness(1.08);transform:translateY(-1px);box-shadow:0 4px 12px rgba(21,128,61,.45)}
 .btn-d{background:var(--red);color:#fff;border-color:var(--red)}.btn-d:hover{filter:brightness(1.1)}
 .btn-s{background:var(--bg-card);color:var(--text-primary);border-color:var(--border-strong)}.btn-s:hover{background:var(--bg-card-hover)}
 .btn-g{background:transparent;color:var(--text-secondary);border-color:transparent}.btn-g:hover{background:var(--bg-card);color:var(--text-primary)}
@@ -266,13 +255,13 @@ select.fc{cursor:pointer}
 <!-- ═══════════════ SIDEBAR ═══════════════ -->
 <aside class="sidebar" id="sidebar">
   <div class="sb-logo">
-    <div class="logo-mark">OH</div>
-    <div><div class="logo-txt">ERP OHADA</div><div class="logo-sub">Gestion Comptable</div></div>
+    <div class="logo-mark">AD</div>
+    <div><div class="logo-txt">ADEL S.A.S.</div><div class="logo-sub">Gestion Comptable OHADA</div></div>
   </div>
 
   <nav class="sb-nav" id="sb-nav">
     <!-- Tableau de bord -->
-    <div class="nav-it" data-page="dashboard">
+    <div class="nav-it active" data-page="dashboard">
       <span class="ni-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg></span>
       <span class="ni-lbl">Tableau de bord</span>
     </div>
@@ -297,7 +286,7 @@ select.fc{cursor:pointer}
     <div class="sec-lbl">Commerce</div>
     <div class="nav-it" data-sub="sub2">
       <span class="ni-icon"><svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg></span>
-      <span class="ni-lbl">Ventes</span><span class="ni-badge">12</span>
+      <span class="ni-lbl">Ventes</span>
       <span class="ni-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg></span>
     </div>
     <div class="sub-menu" id="sub2">
@@ -344,7 +333,7 @@ select.fc{cursor:pointer}
     <div class="sec-lbl">Logistique</div>
     <div class="nav-it" data-sub="sub4">
       <span class="ni-icon"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg></span>
-      <span class="ni-lbl">Stocks</span><span class="ni-badge" style="background:var(--amber)">3</span>
+      <span class="ni-lbl">Stocks</span>
       <span class="ni-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg></span>
     </div>
     <div class="sub-menu" id="sub4">
@@ -404,7 +393,7 @@ select.fc{cursor:pointer}
 
     <!-- Admin -->
     <div class="sec-lbl">Administration</div>
-    <div class="nav-it active" data-page="utilisateurs">
+    <div class="nav-it" data-page="utilisateurs">
       <span class="ni-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></span>
       <span class="ni-lbl">Utilisateurs &amp; Rôles</span>
     </div>
@@ -416,10 +405,10 @@ select.fc{cursor:pointer}
 
   <div class="sb-foot">
     <div class="u-card">
-      <div class="u-av">MD</div>
+      <div class="u-av">U</div>
       <div class="u-info">
-        <div class="u-name">Utilisateur principal</div>
-        <div class="u-role">Directeur Financier</div>
+        <div class="u-name">Utilisateur</div>
+        <div class="u-role">Administrateur</div>
       </div>
     </div>
   </div>
@@ -437,8 +426,8 @@ select.fc{cursor:pointer}
   </div>
   <div class="tb-sp"></div>
   <div class="tb-acts">
-    <select class="yr-sel" id="yr-sel"><option>Exercice en cours</option><option>Exercice précédent</option><option>Exercice N-2</option></select>
-    <div class="co-pill"><span class="co-dot"></span><span class="co-name">Votre entreprise</span><svg width="12" height="12" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" style="color:var(--text-muted)"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+    <select class="yr-sel" id="yr-sel"><option>Exercice 2026</option><option>Exercice 2025</option><option>Exercice 2024</option></select>
+    <div class="co-pill"><span class="co-dot"></span><span class="co-name" id="co-name-lbl">Votre Entreprise</span><svg width="12" height="12" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" style="color:var(--text-muted)"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
     <button class="tb-btn" id="theme-btn" title="Thème">
       <svg id="ico-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
       <svg id="ico-sun" viewBox="0 0 24 24" style="display:none"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
@@ -453,7 +442,7 @@ select.fc{cursor:pointer}
           <span style="font-weight:600;font-size:.9rem">Notifications</span>
           <button class="btn btn-g btn-sm">Tout lire</button>
         </div>
-        <div id="notif-list"><div class="notif-it"><span class="n-new" style=""></span><div style="flex:1"><div style="font-size:.8125rem;font-weight:600;color:var(--text-primary);margin-bottom:2px">Facture FAC-DEMO-1243 en retard</div><div style="font-size:.75rem;color:var(--text-muted)">Client Epsilon — 18 500 000 FCFA</div><div style="font-size:.6875rem;color:var(--text-muted);margin-top:2px">Il y a 2 h</div></div></div><div class="notif-it"><span class="n-new" style=""></span><div style="flex:1"><div style="font-size:.8125rem;font-weight:600;color:var(--text-primary);margin-bottom:2px">Déclaration TVA à remettre</div><div style="font-size:.75rem;color:var(--text-muted)">Échéance fiscale à renseigner</div><div style="font-size:.6875rem;color:var(--text-muted);margin-top:2px">Il y a 5 h</div></div></div><div class="notif-it"><span class="" style="width:7px;flex-shrink:0"></span><div style="flex:1"><div style="font-size:.8125rem;font-weight:400;color:var(--text-primary);margin-bottom:2px">Rapprochement bancaire réussi</div><div style="font-size:.75rem;color:var(--text-muted)">287 opérations vérifiées</div><div style="font-size:.6875rem;color:var(--text-muted);margin-top:2px">Il y a 8 h</div></div></div><div class="notif-it"><span class="" style="width:7px;flex-shrink:0"></span><div style="flex:1"><div style="font-size:.8125rem;font-weight:400;color:var(--text-primary);margin-bottom:2px">Stock critique : Papier A4</div><div style="font-size:.75rem;color:var(--text-muted)">3 rames restantes</div><div style="font-size:.6875rem;color:var(--text-muted);margin-top:2px">Hier</div></div></div></div>
+        <div id="notif-list"></div>
       </div>
     </div>
     <button class="tb-btn" title="Paramètres" onclick="navigate(&#39;parametres&#39;)">
@@ -483,99 +472,45 @@ select.fc{cursor:pointer}
 'use strict';
 
 /* ═══════════════════════════════════════════════════════════
-   DONNÉES DE DÉMONSTRATION — MODÈLE GÉNÉRIQUE RÉUTILISABLE
-   Les informations d'entreprise ci-dessous sont volontairement
-   neutres et peuvent être remplacées pour chaque dossier.
+   DONNÉES — instance vierge (à zéro), prête pour saisie réelle.
+   Le plan comptable OHADA ci-dessous est une référence normative,
+   pas une donnée de démonstration : il est conservé tel quel.
 ═══════════════════════════════════════════════════════════ */
-  
 const D = {
-  company:{name:'Votre entreprise',ninea:'À renseigner',rccm:'À renseigner',capital:0},
+  company:{name:'Votre Entreprise',ninea:'',rccm:'',capital:0},
   kpis:{
-    caHT:487650000,caEvol:12.3,resultatNet:89200000,resultatBrut:124500000,ebitda:156800000,
-    trésorerie:312500000,soldeBanque:287400000,soldeCaisse:25100000,
-    soldeClients:98700000,soldeFournisseurs:67300000,stocks:43200000,immobilisations:215600000,
-    tvàCollectée:87777000,tvàRécupérable:12114600,tvàNet:75662400,
-    totalCharges:362450000,chargesSalariales:68900000,impots:9820000,
-    nbFactures:1531,nbVentes:1247,nbAchats:384,nbDevis:218,nbClients:342,nbFournisseurs:87
+    caHT:0,caEvol:0,resultatNet:0,resultatBrut:0,ebitda:0,
+    trésorerie:0,soldeBanque:0,soldeCaisse:0,
+    soldeClients:0,soldeFournisseurs:0,stocks:0,immobilisations:0,
+    tvàCollectée:0,tvàRécupérable:0,tvàNet:0,
+    totalCharges:0,chargesSalariales:0,impots:0,
+    nbFactures:0,nbVentes:0,nbAchats:0,nbDevis:0,nbClients:0,nbFournisseurs:0
   },
   caMonthly:[
-    {m:'Jan',ca:38500000,ch:28200000},{m:'Fév',ca:41200000,ch:29100000},{m:'Mar',ca:44800000,ch:31500000},
-    {m:'Avr',ca:39600000,ch:28900000},{m:'Mai',ca:48200000,ch:33400000},{m:'Jun',ca:52100000,ch:35800000},
-    {m:'Jul',ca:46900000,ch:32100000},{m:'Aoû',ca:43700000,ch:30500000},{m:'Sep',ca:49300000,ch:34200000},
-    {m:'Oct',ca:51800000,ch:35100000},{m:'Nov',ca:54200000,ch:36800000},{m:'Déc',ca:57350000,ch:37850000}
+    {m:'Jan',ca:0,ch:0},{m:'Fév',ca:0,ch:0},{m:'Mar',ca:0,ch:0},
+    {m:'Avr',ca:0,ch:0},{m:'Mai',ca:0,ch:0},{m:'Jun',ca:0,ch:0},
+    {m:'Jul',ca:0,ch:0},{m:'Aoû',ca:0,ch:0},{m:'Sep',ca:0,ch:0},
+    {m:'Oct',ca:0,ch:0},{m:'Nov',ca:0,ch:0},{m:'Déc',ca:0,ch:0}
   ],
   tresMonthly:[
-    {m:'Jan',b:245000000,c:18500000},{m:'Fév',b:251000000,c:19200000},{m:'Mar',b:263000000,c:20800000},
-    {m:'Avr',b:258000000,c:21500000},{m:'Mai',b:271000000,c:22100000},{m:'Jun',b:284000000,c:23400000},
-    {m:'Jul',b:279000000,c:24000000},{m:'Aoû',b:282000000,c:23800000},{m:'Sep',b:289000000,c:24600000},
-    {m:'Oct',b:285000000,c:25000000},{m:'Nov',b:290000000,c:25000000},{m:'Déc',b:287400000,c:25100000}
+    {m:'Jan',b:0,c:0},{m:'Fév',b:0,c:0},{m:'Mar',b:0,c:0},
+    {m:'Avr',b:0,c:0},{m:'Mai',b:0,c:0},{m:'Jun',b:0,c:0},
+    {m:'Jul',b:0,c:0},{m:'Aoû',b:0,c:0},{m:'Sep',b:0,c:0},
+    {m:'Oct',b:0,c:0},{m:'Nov',b:0,c:0},{m:'Déc',b:0,c:0}
   ],
   charges:[
-    {label:'Salaires & charges',value:68900000,pct:19.0},{label:'Achats marchandises',value:142500000,pct:39.3},
-    {label:'Services ext.',value:54200000,pct:15.0},{label:'Amortissements',value:32800000,pct:9.1},
-    {label:'Impôts & taxes',value:9820000,pct:2.7},{label:'Charges financières',value:12400000,pct:3.4},
-    {label:'Autres charges',value:41830000,pct:11.5}
+    {label:'Salaires & charges',value:0,pct:0},{label:'Achats marchandises',value:0,pct:0},
+    {label:'Services ext.',value:0,pct:0},{label:'Amortissements',value:0,pct:0},
+    {label:'Impôts & taxes',value:0,pct:0},{label:'Charges financières',value:0,pct:0},
+    {label:'Autres charges',value:0,pct:0}
   ],
-  factures:[
-    {id:'FAC-DEMO-1247',client:'Client Alpha',date:'2025-02-18',montant:8750000,statut:'payée',echeance:'2025-02-28'},
-    {id:'FAC-DEMO-1246',client:'Client Beta',date:'2025-02-17',montant:4320000,statut:'en_attente',echeance:'2025-02-16'},
-    {id:'FAC-DEMO-1245',client:'Client Gamma',date:'2025-02-15',montant:12100000,statut:'en_attente',echeance:'2025-02-14'},
-    {id:'FAC-DEMO-1244',client:'Client Delta',date:'2025-02-12',montant:2890000,statut:'payée',echeance:'2025-02-22'},
-    {id:'FAC-DEMO-1243',client:'Client Epsilon',date:'2025-02-10',montant:18500000,statut:'en_retard',echeance:'2025-02-20'},
-    {id:'FAC-DEMO-1242',client:'Client Zeta',date:'2025-02-08',montant:6200000,statut:'partielle',echeance:'2025-02-07'},
-    {id:'FAC-DEMO-1241',client:'Client Eta',date:'2025-02-05',montant:9450000,statut:'payée',echeance:'2025-02-15'},
-    {id:'FAC-DEMO-1240',client:'Client Theta',date:'2025-02-02',montant:3780000,statut:'annulée',echeance:'2025-02-01'}
-  ],
-  ecritures:[
-    {date:'2025-02-18',ref:'JV-DEMO-001',compte:'411000',libellé:'FAC-DEMO-1247 Client Alpha',débit:10325000,crédit:0,journal:'VT'},
-    {date:'2025-02-18',ref:'JV-DEMO-001',compte:'701000',libellé:'Vente de marchandises',débit:0,crédit:8750000,journal:'VT'},
-    {date:'2025-02-18',ref:'JV-DEMO-001',compte:'443100',libellé:'TVA collectée 18%',débit:0,crédit:1575000,journal:'VT'},
-    {date:'2025-02-17',ref:'BQ-DEMO-001',compte:'512100',libellé:'Virement client',débit:10325000,crédit:0,journal:'BQ'},
-    {date:'2025-02-17',ref:'BQ-DEMO-001',compte:'411000',libellé:'Règlement FAC-DEMO-1238',débit:0,crédit:10325000,journal:'BQ'},
-    {date:'2025-02-16',ref:'AC-DEMO-001',compte:'601000',libellé:'Achat marchandises Fournisseur Alpha',débit:6800000,crédit:0,journal:'AC'},
-    {date:'2025-02-16',ref:'AC-DEMO-001',compte:'445620',libellé:'TVA récupérable',débit:1224000,crédit:0,journal:'AC'},
-    {date:'2025-02-16',ref:'AC-DEMO-001',compte:'401000',libellé:'Fournisseur Alpha - dette fournisseur',débit:0,crédit:8024000,journal:'AC'}
-  ],
-  employes:[
-    {nom:'Utilisateur principal',poste:'Directeur Financier',dept:'Finance',salaire:850000,statut:'actif'},
-    {nom:'Collaborateur 1',poste:'Chef Comptable',dept:'Compta',salaire:620000,statut:'actif'},
-    {nom:'Collaborateur 2',poste:'Commercial Senior',dept:'Ventes',salaire:480000,statut:'actif'},
-    {nom:'Collaborateur 3',poste:'Assistante RH',dept:'RH',salaire:390000,statut:'actif'},
-    {nom:'Collaborateur 4',poste:'Magasinier',dept:'Stock',salaire:320000,statut:'actif'},
-    {nom:'Collaborateur 5',poste:'Caissière',dept:'Finance',salaire:340000,statut:'congé'}
-  ],
-  clients:[
-    {nom:'Client Alpha',contact:'Contact client 1',tel:'+221 33 839 10 00',email:'contact@client-alpha.example',solde:12400000,limite:25000000,statut:'actif'},
-    {nom:'Client Gamma',contact:'Contact client 2',tel:'+221 33 869 20 00',email:'contact@client-gamma.example',solde:18700000,limite:30000000,statut:'actif'},
-    {nom:'Client Epsilon',contact:'Contact client 3',tel:'+221 33 859 30 00',email:'contact@client-epsilon.example',solde:18500000,limite:20000000,statut:'risque'},
-    {nom:'Client Delta',contact:'Contact client 4',tel:'+221 33 849 40 00',email:'contact@client-delta.example',solde:2890000,limite:15000000,statut:'actif'},
-    {nom:'Client Beta',contact:'Contact client 5',tel:'+221 33 839 50 00',email:'contact@client-beta.example',solde:4320000,limite:10000000,statut:'actif'},
-    {nom:'Client Zeta',contact:'Contact client 6',tel:'+221 33 829 60 00',email:'contact@client-zeta.example',solde:6200000,limite:18000000,statut:'actif'},
-    {nom:'Client Eta',contact:'Contact client 7',tel:'+221 33 819 70 00',email:'contact@client-eta.example',solde:0,limite:22000000,statut:'actif'},
-    {nom:'Client Theta',contact:'Contact client 8',tel:'+221 33 809 80 00',email:'contact@client-theta.example',solde:3780000,limite:8000000,statut:'inactif'}
-  ],
-  fournisseurs:[
-    {nom:'Fournisseur Alpha',contact:'Contact fournisseur 1',tel:'+221 33 821 11 00',categorie:'Fournitures',solde:8024000,statut:'actif'},
-    {nom:'Banque principale',contact:'Service fournisseur',tel:'+221 33 859 22 00',categorie:'Services bancaires',solde:0,statut:'actif'},
-    {nom:'Fournisseur Énergie',contact:'Service client',tel:'+221 800 00 11',categorie:'Énergie',solde:4200000,statut:'actif'},
-    {nom:'Fournisseur Eau',contact:'Service client',tel:'+221 800 00 12',categorie:'Eau',solde:980000,statut:'actif'},
-    {nom:'Prestataire Audit',contact:'Contact prestataire 1',tel:'+221 33 849 33 00',categorie:'Audit & contrôle',solde:3500000,statut:'actif'},
-    {nom:'Prestataire Informatique',contact:'Contact prestataire 2',tel:'+221 33 859 44 00',categorie:'Informatique',solde:12800000,statut:'actif'}
-  ],
-  banques:[
-    {nom:'Banque principale',compte:'SN012 01001 0123456789 12',solde:178400000,devise:'XOF'},
-    {nom:'Client Delta Attijariwafa',compte:'SN013 01002 0987654321 45',solde:109000000,devise:'XOF'}
-  ],
-  articles:[
-    {ref:'ART-0001',nom:'Ordinateur portable Dell',cat:'Informatique',stock:24,seuil:10,pu:450000,valeur:10800000},
-    {ref:'ART-0002',nom:'Papier A4 (rame)',cat:'Fournitures',stock:3,seuil:20,pu:2500,valeur:7500},
-    {ref:'ART-0003',nom:'Imprimante HP LaserJet',cat:'Informatique',stock:8,seuil:5,pu:185000,valeur:1480000},
-    {ref:'ART-0004',nom:'Chaise de bureau',cat:'Mobilier',stock:42,seuil:15,pu:65000,valeur:2730000},
-    {ref:'ART-0005',nom:'Climatiseur 1.5CV',cat:'Équipement',stock:6,seuil:5,pu:285000,valeur:1710000},
-    {ref:'ART-0006',nom:'Toner HP 26A',cat:'Fournitures',stock:18,seuil:10,pu:42000,valeur:756000},
-    {ref:'ART-0007',nom:'Bureau directorial',cat:'Mobilier',stock:4,seuil:3,pu:320000,valeur:1280000},
-    {ref:'ART-0008',nom:'Onduleur 1000VA',cat:'Informatique',stock:11,seuil:8,pu:75000,valeur:825000}
-  ],
+  factures:[],
+  ecritures:[],
+  employes:[],
+  clients:[],
+  fournisseurs:[],
+  banques:[],
+  articles:[],
   plan:[
     {compte:'101000',libellé:'Capital social',classe:1},{compte:'106100',libellé:'Réserve légale',classe:1},
     {compte:'120000',libellé:"Résultat de l'exercice",classe:1},{compte:'161000',libellé:'Emprunts obligataires',classe:1},
@@ -585,17 +520,12 @@ const D = {
     {compte:'401000',libellé:'Fournisseurs',classe:4},{compte:'411000',libellé:'Clients',classe:4},
     {compte:'421000',libellé:'Personnel — rémunérations dues',classe:4},{compte:'431000',libellé:'IPRES',classe:4},
     {compte:'443100',libellé:'TVA collectée',classe:4},{compte:'445620',libellé:'TVA récupérable',classe:4},
-    {compte:'512100',libellé:'Banque principale — compte courant',classe:5},{compte:'521000',libellé:'Caisse principale',classe:5},
+    {compte:'512100',libellé:'Banque — compte courant',classe:5},{compte:'521000',libellé:'Caisse principale',classe:5},
     {compte:'601000',libellé:'Achats de marchandises',classe:6},{compte:'641000',libellé:'Rémunérations du personnel',classe:6},
     {compte:'645000',libellé:'Charges sociales',classe:6},{compte:'681000',libellé:'Dotations aux amortissements',classe:6},
     {compte:'701000',libellé:'Ventes de marchandises',classe:7},{compte:'706000',libellé:'Prestations de services',classe:7}
   ],
-  notifications:[
-    {title:'Facture FAC-DEMO-1243 en retard',detail:'Client Epsilon — 18 500 000 FCFA',time:'Il y a 2 h',isNew:true},
-    {title:'Déclaration TVA à remettre',detail:'Échéance fiscale à renseigner',time:'Il y a 5 h',isNew:true},
-    {title:'Rapprochement bancaire réussi',detail:'287 opérations vérifiées',time:'Il y a 8 h',isNew:false},
-    {title:'Stock critique : Papier A4',detail:'3 rames restantes',time:'Hier',isNew:false}
-  ]
+  notifications:[]
 };
 
 /* ═══════════════════════════════════════════════════════════
@@ -616,7 +546,7 @@ function loadPersisted(){
 function persistDB(){
   try{
     localStorage.setItem(DB_KEY,JSON.stringify({
-      factures:D.factures,ecritures:D.ecritures,nextFacNum:D._nextFacNum||1249,savedAt:Date.now()
+      factures:D.factures,ecritures:D.ecritures,nextFacNum:D._nextFacNum||1,savedAt:Date.now()
     }));
   }catch(e){console.warn('Sauvegarde locale impossible',e);}
 }
@@ -673,7 +603,6 @@ let charts={};
 function destroyChart(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
 
 function buildChartCA(){
-  if(!window.Chart)return;
   destroyChart('ca');
   const canvas=document.getElementById('ch-ca');if(!canvas)return;
   charts['ca']=new Chart(canvas,{type:'bar',data:{
@@ -690,14 +619,13 @@ function buildChartCA(){
 }
 
 function buildChartTres(){
-  if(!window.Chart)return;
   destroyChart('tres');
   const canvas=document.getElementById('ch-tres');if(!canvas)return;
   charts['tres']=new Chart(canvas,{type:'line',data:{
     labels:D.tresMonthly.map(d=>d.m),
     datasets:[
-      {label:'Banque',data:D.tresMonthly.map(d=>+(d.b/1e6).toFixed(1)),borderColor:'#16A34A',backgroundColor:'rgba(22,163,74,.08)',borderWidth:2,fill:true,tension:.4,pointRadius:2},
-      {label:'Caisse',data:D.tresMonthly.map(d=>+(d.c/1e6).toFixed(1)),borderColor:'#F59E0B',backgroundColor:'rgba(245,158,11,.06)',borderWidth:2,fill:true,tension:.4,pointRadius:2}
+      {label:'Banque',data:D.tresMonthly.map(d=>+(d.b/1e6).toFixed(1)),borderColor:'#0E7C3F',backgroundColor:'rgba(22,163,74,.08)',borderWidth:2,fill:true,tension:.4,pointRadius:2},
+      {label:'Caisse',data:D.tresMonthly.map(d=>+(d.c/1e6).toFixed(1)),borderColor:'#D9A404',backgroundColor:'rgba(245,158,11,.06)',borderWidth:2,fill:true,tension:.4,pointRadius:2}
     ]
   },options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
     plugins:{legend:{position:'top',labels:{color:chartDef.color,font:chartDef.font,boxWidth:10,padding:12}},tooltip:{backgroundColor:'#0E2A20',borderColor:'rgba(190,220,205,.18)',borderWidth:1,padding:10,titleColor:'#F4FAF6',bodyColor:'#93B0A2'}},
@@ -706,10 +634,9 @@ function buildChartTres(){
 }
 
 function buildChartDoughnut(){
-  if(!window.Chart)return;
   destroyChart('charges');
   const canvas=document.getElementById('ch-charges');if(!canvas)return;
-  const colors=['#16A34A','#3B82F6','#F59E0B','#8B5CF6','#DC2626','#06B6D4','#F97316'];
+  const colors=['#0E7C3F','#3B82F6','#D9A404','#8B5CF6','#D42027','#06B6D4','#F97316'];
   charts['charges']=new Chart(canvas,{type:'doughnut',data:{
     labels:D.charges.map(d=>d.label),
     datasets:[{data:D.charges.map(d=>+(d.value/1e6).toFixed(1)),backgroundColor:colors,borderWidth:2,borderColor:'#0E2A20',hoverOffset:4}]
@@ -722,19 +649,20 @@ function buildChartDoughnut(){
 }
 
 function buildSparklines(){
+  const zero12=[0,0,0,0,0,0,0,0,0,0,0,0];
   const sparkData={
-    'sp-ca':[32,36,39,37,42,45,41,40,44,47,49,51],
-    'sp-rn':[6,7,6.5,7.2,7.8,8,7.5,7.8,8.2,8.5,8.8,8.9],
-    'sp-ebitda':[12,13,12.5,13.5,14,14.5,13.8,14.2,14.8,15,15.5,15.7],
-    'sp-tres':[240,244,250,255,258,262,260,265,268,272,275,287],
-    'sp-cli':[85,88,90,87,92,95,91,89,93,96,98,99],
-    'sp-fou':[58,61,63,60,64,66,62,65,67,66,68,67]
+    'sp-ca':D.caMonthly.map(d=>+(d.ca/1e6).toFixed(1)),
+    'sp-rn':zero12,
+    'sp-ebitda':zero12,
+    'sp-tres':D.tresMonthly.map(d=>+(d.b/1e6).toFixed(1)),
+    'sp-cli':zero12,
+    'sp-fou':zero12
   };
   Object.entries(sparkData).forEach(([id,data])=>{
     destroyChart(id);
     const c=document.getElementById(id);if(!c||!window.Chart)return;
     const up=data[data.length-1]>data[0];
-    charts[id]=new Chart(c,{type:'line',data:{labels:data.map((_,i)=>i),datasets:[{data,borderColor:up?'#16A34A':'#DC2626',backgroundColor:'transparent',borderWidth:1.5,pointRadius:0,tension:.4}]},options:{responsive:false,animation:false,plugins:{legend:{display:false},tooltip:{enabled:false}},scales:{x:{display:false},y:{display:false}}}});
+    charts[id]=new Chart(c,{type:'line',data:{labels:data.map((_,i)=>i),datasets:[{data,borderColor:up?'#0E7C3F':'#D42027',backgroundColor:'transparent',borderWidth:1.5,pointRadius:0,tension:.4}]},options:{responsive:false,animation:false,plugins:{legend:{display:false},tooltip:{enabled:false}},scales:{x:{display:false},y:{display:false}}}});
   });
 }
 
@@ -757,11 +685,14 @@ function animateKPIs(){
 /* ── DASHBOARD ─────────────────────────────────────────── */
 function pageDashboard(){
   const k=D.kpis;
+  const retard=D.factures.filter(f=>f.statut==='en_retard');
+  const montantRetard=retard.reduce((s,f)=>s+f.montant,0);
+  const limiteTVA=new Date();limiteTVA.setMonth(limiteTVA.getMonth()+1,15);
   return `
 <div class="ph">
   <div class="ph-l">
     <h1 class="ph-ttl">Tableau de bord</h1>
-    <p class="ph-sub">${new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'})} · Exercice en cours · Votre entreprise</p>
+    <p class="ph-sub">${new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'})} · Exercice ${new Date().getFullYear()} · ${D.company.name}</p>
   </div>
   <div class="ph-r">
     <button class="btn btn-s" onclick="window.print()"><svg viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Imprimer</button>
@@ -770,18 +701,18 @@ function pageDashboard(){
 </div>
 
 <!-- Alertes -->
-<div class="alert warning"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span><strong>5 factures en retard</strong> — 32 580 000 FCFA non recouvrés · <a href="#" onclick="navigate('factures')" style="color:inherit;font-weight:600;text-decoration:underline">Voir les factures</a></span></div>
-<div class="alert info"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg><span>Déclaration TVA du mois à remettre avant le <strong>15 janvier 2025</strong> · <a href="#" onclick="navigate('tva')" style="color:inherit;font-weight:600;text-decoration:underline">Préparer</a></span></div>
+${retard.length?`<div class="alert warning"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span><strong>${retard.length} facture(s) en retard</strong> — ${F.money(montantRetard,true)} non recouvrés · <a href="#" onclick="navigate('factures')" style="color:inherit;font-weight:600;text-decoration:underline">Voir les factures</a></span></div>`:''}
+<div class="alert info"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg><span>Déclaration TVA du mois à remettre avant le <strong>${F.date(limiteTVA.toISOString(),'long')}</strong> · <a href="#" onclick="navigate('tva')" style="color:inherit;font-weight:600;text-decoration:underline">Préparer</a></span></div>
 
 <!-- KPIs financiers -->
 <div class="sec-lbl2">Indicateurs financiers</div>
 <div class="kpi-grid">
   ${kpiCard('Chiffre d\'Affaires',k.caHT,'green','ch-ca-ico',k.caEvol,'sp-ca')}
-  ${kpiCard('Résultat Net',k.resultatNet,'blue','ch-rn-ico',8.4,'sp-rn')}
-  ${kpiCard('EBITDA',k.ebitda,'purple','ch-ebi-ico',6.2,'sp-ebitda')}
-  ${kpiCard('Trésorerie',k.trésorerie,'green','ch-tr-ico',3.1,'sp-tres')}
-  ${kpiCard('Créances Clients',k.soldeClients,'amber','ch-cli-ico',-2.3,'sp-cli')}
-  ${kpiCard('Dettes Fourn.',k.soldeFournisseurs,'red','ch-fou-ico',1.8,'sp-fou')}
+  ${kpiCard('Résultat Net',k.resultatNet,'blue','ch-rn-ico',0,'sp-rn')}
+  ${kpiCard('EBITDA',k.ebitda,'purple','ch-ebi-ico',0,'sp-ebitda')}
+  ${kpiCard('Trésorerie',k.trésorerie,'green','ch-tr-ico',0,'sp-tres')}
+  ${kpiCard('Créances Clients',k.soldeClients,'amber','ch-cli-ico',0,'sp-cli')}
+  ${kpiCard('Dettes Fourn.',k.soldeFournisseurs,'red','ch-fou-ico',0,'sp-fou')}
 </div>
 
 <!-- KPIs activité -->
@@ -868,13 +799,13 @@ function kpiSmall(label,value,color){
 
 function buildObjectifs(k){
   const rows=[
-    {label:"CA annuel",cur:k.caHT,target:512000000,color:'green'},
-    {label:"Résultat net",cur:k.resultatNet,target:100000000,color:'blue'},
-    {label:"Trésorerie",cur:k.trésorerie,target:350000000,color:'purple'},
-    {label:"Recouvrement",cur:k.soldeClients,target:120000000,color:'amber'}
+    {label:"CA annuel",cur:k.caHT,target:0,color:'green'},
+    {label:"Résultat net",cur:k.resultatNet,target:0,color:'blue'},
+    {label:"Trésorerie",cur:k.trésorerie,target:0,color:'purple'},
+    {label:"Recouvrement",cur:k.soldeClients,target:0,color:'amber'}
   ];
   return rows.map(r=>{
-    const pct=Math.min(100,Math.round(r.cur/r.target*100));
+    const pct=r.target>0?Math.min(100,Math.round(r.cur/r.target*100)):0;
     return `<div style="margin-bottom:.875rem">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.35rem">
         <span style="font-size:.8125rem;font-weight:500">${r.label}</span>
@@ -889,12 +820,15 @@ function buildObjectifs(k){
 }
 
 function buildAlertesCard(){
-  return [
-    {type:'warning',msg:'5 factures en retard de paiement',action:'Voir',page:'factures'},
-    {type:'info',msg:'Déclaration TVA à remettre le 15 janv.',action:'Préparer',page:'tva'},
-    {type:'danger',msg:'Stock critique : Papier A4 (3 rames)',action:'Commander',page:'articles'},
-    {type:'success',msg:'Rapprochement bancaire réussi',action:'Voir',page:'banques'}
-  ].map(a=>`
+  const limiteTVA=new Date();limiteTVA.setMonth(limiteTVA.getMonth()+1,15);
+  const retard=D.factures.filter(f=>f.statut==='en_retard').length;
+  const critiques=D.articles.filter(a=>a.stock<a.seuil).length;
+  const alertes=[];
+  if(retard)alertes.push({type:'warning',msg:`${retard} facture(s) en retard de paiement`,action:'Voir',page:'factures'});
+  alertes.push({type:'info',msg:`Déclaration TVA à remettre le ${F.date(limiteTVA.toISOString())}`,action:'Préparer',page:'tva'});
+  if(critiques)alertes.push({type:'danger',msg:`${critiques} article(s) en stock critique`,action:'Voir',page:'articles'});
+  if(!alertes.length)return `<p style="font-size:.8rem;color:var(--text-muted);padding:.5rem 0">Aucune alerte pour le moment.</p>`;
+  return alertes.map(a=>`
     <div style="display:flex;align-items:flex-start;gap:.75rem;padding:.7rem 0;border-bottom:1px solid var(--border)">
       <span style="color:${a.type==='warning'?'var(--amber)':a.type==='danger'?'var(--red)':a.type==='success'?'var(--accent)':'var(--blue)'};flex-shrink:0;display:flex;margin-top:2px">
         <svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
@@ -905,8 +839,8 @@ function buildAlertesCard(){
 }
 
 function buildBilanSimple(k){
-  const actif=[['Immobilisations nettes',k.immobilisations-32400000],['Stocks',k.stocks],['Créances clients',k.soldeClients],['Trésorerie',k.trésorerie]];
-  const passif=[["Capital & Réserves",200000000+18000000],["Résultat de l'exercice",k.resultatNet],["Dettes financières",82200000],["Dettes fournisseurs",k.soldeFournisseurs]];
+  const actif=[['Immobilisations nettes',k.immobilisations],['Stocks',k.stocks],['Créances clients',k.soldeClients],['Trésorerie',k.trésorerie]];
+  const passif=[["Capital & Réserves",D.company.capital],["Résultat de l'exercice",k.resultatNet],["Dettes financières",0],["Dettes fournisseurs",k.soldeFournisseurs]];
   const tA=actif.reduce((s,[,v])=>s+v,0),tP=passif.reduce((s,[,v])=>s+v,0);
   const row=items=>items.map(([l,v])=>`<tr><td style="padding:.4rem .5rem;font-size:.8rem;color:var(--text-secondary)">${l}</td><td style="text-align:right;font-size:.8rem;font-weight:500;font-family:monospace;padding:.4rem .5rem">${F.money(v,true)}</td></tr>`).join('');
   return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
@@ -924,12 +858,12 @@ function buildBilanSimple(k){
 function buildResultatSimple(k){
   const rows=[
     ['+  Chiffre d\'affaires HT',k.caHT,'var(--accent)',true],
-    ['−  Achats & variations',-142500000,'var(--red)',false],
+    ['−  Achats & variations',0,'var(--red)',false],
     ['−  Charges de personnel',-k.chargesSalariales,'var(--red)',false],
-    ['−  Autres charges',-109050000,'var(--red)',false],
+    ['−  Autres charges',0,'var(--red)',false],
     ['=  Résultat brut d\'exploitation',k.resultatBrut,'var(--blue)',true],
-    ['−  Amortissements',-32800000,'var(--red)',false],
-    ['−  Charges financières',-12400000,'var(--red)',false],
+    ['−  Amortissements',0,'var(--red)',false],
+    ['−  Charges financières',0,'var(--red)',false],
     ['−  IS estimé',-k.impots,'var(--red)',false],
     ['=  Résultat net',k.resultatNet,'var(--accent)',true]
   ];
@@ -996,7 +930,7 @@ function pageFactures(){
     </div>
     <div class="m-bd">
       <div class="fgrid3" style="margin-bottom:1rem">
-        <div class="fg"><label class="fl">Référence</label><input class="fc" value="FAC-DEMO-1248" readonly style="background:var(--bg-base)"></div>
+        <div class="fg"><label class="fl">Référence</label><input class="fc" value="FAC-${new Date().getFullYear()}-${String(D._nextFacNum||1).padStart(4,'0')}" readonly style="background:var(--bg-base)"></div>
         <div class="fg"><label class="fl">Date<span class="req">*</span></label><input type="date" class="fc" id="f-date" value="${new Date().toISOString().slice(0,10)}"></div>
         <div class="fg"><label class="fl">Échéance<span class="req">*</span></label><input type="date" class="fc" id="f-ech" value="${new Date(Date.now()+30*864e5).toISOString().slice(0,10)}"></div>
       </div>
@@ -1004,7 +938,7 @@ function pageFactures(){
         <div class="fg"><label class="fl">Client<span class="req">*</span></label>
           <select class="fc" id="f-client">
             <option value="">— Sélectionner —</option>
-            <option>Client Alpha</option><option>Client Gamma</option><option>Client Epsilon</option><option>Client Delta</option><option>Client Beta</option>
+            ${D.clients.length?D.clients.map(c=>`<option>${c.nom}</option>`).join(''):'<option value="" disabled>Aucun client — ajoutez-en un dans « Clients »</option>'}
           </select>
         </div>
         <div class="fg"><label class="fl">Mode de règlement</label>
@@ -1027,8 +961,7 @@ function pageFactures(){
               <th style="width:4%"></th>
             </tr></thead>
             <tbody id="lines-body">
-              ${lineRow('Prestation de services informatiques',5,350000)}
-              ${lineRow('Maintenance annuelle système',1,450000)}
+              ${lineRow('',1,0)}
             </tbody>
           </table>
         </div>
@@ -1036,10 +969,10 @@ function pageFactures(){
       <!-- Totaux -->
       <div style="display:flex;justify-content:flex-end">
         <div style="width:290px;background:var(--bg-input);border-radius:var(--r-sm);padding:.875rem">
-          <div style="display:flex;justify-content:space-between;margin-bottom:.4rem;font-size:.8125rem"><span style="color:var(--text-muted)">Sous-total HT</span><span id="tot-ht" style="font-weight:500">2 200 000 FCFA</span></div>
-          <div style="display:flex;justify-content:space-between;margin-bottom:.4rem;font-size:.8125rem"><span style="color:var(--text-muted)">TVA (18%)</span><span id="tot-tva" style="color:var(--amber)">396 000 FCFA</span></div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:.4rem;font-size:.8125rem"><span style="color:var(--text-muted)">Sous-total HT</span><span id="tot-ht" style="font-weight:500">0 FCFA</span></div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:.4rem;font-size:.8125rem"><span style="color:var(--text-muted)">TVA (18%)</span><span id="tot-tva" style="color:var(--amber)">0 FCFA</span></div>
           <div style="height:1px;background:var(--border);margin:.5rem 0"></div>
-          <div style="display:flex;justify-content:space-between;font-size:.9375rem;font-weight:700"><span>Total TTC</span><span id="tot-ttc" style="color:var(--accent)">2 596 000 FCFA</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:.9375rem;font-weight:700"><span>Total TTC</span><span id="tot-ttc" style="color:var(--accent)">0 FCFA</span></div>
         </div>
       </div>
       <div class="fg" style="margin-top:.875rem"><label class="fl">Note</label><textarea class="fc" rows="2" placeholder="Paiement à 30 jours. Pénalités de retard : 1,5%/mois."></textarea></div>
@@ -1165,11 +1098,8 @@ function pageBalance(){
       rows+=`<tr style="background:rgba(16,185,129,.04);border-top:2px solid var(--border-strong)"><td colspan="6" style="padding:.5rem .875rem;font-weight:700;font-size:.8125rem">CLASSE ${p.classe} — ${clNames[p.classe]||''}</td></tr>`;
       lastC=p.classe;
     }
-    const seed=p.compte.split('').reduce((s,c)=>s+c.charCodeAt(0),0);
-    const solde=Math.round((seed*1234567)%85000000+500000);
-    const isD=[1,2,3,5,6].includes(p.classe);
-    const mvD=isD?solde*1.8:solde*0.3, mvC=isD?solde*0.3:solde*1.8;
-    const sD=isD?solde:0, sC=isD?0:solde;
+    const mvD=0, mvC=0;
+    const sD=0, sC=0;
     totD+=mvD;totC+=mvC;totSD+=sD;totSC+=sC;
     rows+=`<tr>
       <td><span class="mono" style="font-weight:500">${p.compte}</span></td>
@@ -1209,7 +1139,7 @@ function pageBalance(){
 
 /* ── EMPLOYÉS ─────────────────────────────────────────────── */
 function pageEmployes(){
-  const colors=['#16A34A','#3B82F6','#8B5CF6','#F59E0B','#DC2626','#06B6D4'];
+  const colors=['#0E7C3F','#3B82F6','#8B5CF6','#D9A404','#D42027','#06B6D4'];
   const tot=D.employes.reduce((s,e)=>s+e.salaire,0);
   return `
 <div class="ph">
@@ -1300,7 +1230,7 @@ function pageTVA(){
     <div class="c-hd"><div class="c-ttl">TVA collectée — Détail</div></div>
     <table style="width:100%;border-collapse:collapse;font-size:.8125rem">
       <thead><tr style="border-bottom:1px solid var(--border)"><th style="padding:.5rem 0;text-align:left;color:var(--text-muted);font-weight:600;font-size:.6875rem;text-transform:uppercase">Nature</th><th style="text-align:right;padding:.5rem 0;color:var(--text-muted);font-weight:600;font-size:.6875rem;text-transform:uppercase">Base HT</th><th style="text-align:right;padding:.5rem 0;color:var(--text-muted);font-weight:600;font-size:.6875rem;text-transform:uppercase">TVA</th></tr></thead>
-      <tbody>${[['Ventes de marchandises',387000000],['Prestations de services',100650000],['Exportations exonérées',12400000,true]].map(([l,b,exo])=>`<tr style="border-bottom:1px solid var(--border)"><td style="padding:.5rem 0;color:var(--text-secondary)">${l}</td><td style="text-align:right;padding:.5rem 0;font-family:monospace">${F.money(b,true)}</td><td style="text-align:right;padding:.5rem 0;font-family:monospace;color:${exo?'var(--text-muted)':'var(--amber)'}">${exo?'Exonéré':F.money(b*.18,true)}</td></tr>`).join('')}</tbody>
+      <tbody>${[['Ventes de marchandises',0],['Prestations de services',0],['Exportations exonérées',0,true]].map(([l,b,exo])=>`<tr style="border-bottom:1px solid var(--border)"><td style="padding:.5rem 0;color:var(--text-secondary)">${l}</td><td style="text-align:right;padding:.5rem 0;font-family:monospace">${F.money(b,true)}</td><td style="text-align:right;padding:.5rem 0;font-family:monospace;color:${exo?'var(--text-muted)':'var(--amber)'}">${exo?'Exonéré':F.money(b*.18,true)}</td></tr>`).join('')}</tbody>
       <tfoot><tr><td colspan="2" style="padding:.625rem 0;font-weight:700">Total TVA collectée</td><td style="text-align:right;padding:.625rem 0;font-weight:700;color:var(--amber);font-family:monospace">${F.money(k.tvàCollectée)}</td></tr></tfoot>
     </table>
   </div>
@@ -1308,7 +1238,7 @@ function pageTVA(){
     <div class="c-hd"><div class="c-ttl">TVA récupérable — Détail</div></div>
     <table style="width:100%;border-collapse:collapse;font-size:.8125rem">
       <thead><tr style="border-bottom:1px solid var(--border)"><th style="padding:.5rem 0;text-align:left;color:var(--text-muted);font-weight:600;font-size:.6875rem;text-transform:uppercase">Nature</th><th style="text-align:right;padding:.5rem 0;color:var(--text-muted);font-weight:600;font-size:.6875rem;text-transform:uppercase">Base HT</th><th style="text-align:right;padding:.5rem 0;color:var(--text-muted);font-weight:600;font-size:.6875rem;text-transform:uppercase">TVA</th></tr></thead>
-      <tbody>${[['Achats de marchandises',42400000],['Services et prestations',18100000],['Investissements',7000000]].map(([l,b])=>`<tr style="border-bottom:1px solid var(--border)"><td style="padding:.5rem 0;color:var(--text-secondary)">${l}</td><td style="text-align:right;padding:.5rem 0;font-family:monospace">${F.money(b,true)}</td><td style="text-align:right;padding:.5rem 0;font-family:monospace;color:var(--accent)">${F.money(b*.18,true)}</td></tr>`).join('')}</tbody>
+      <tbody>${[['Achats de marchandises',0],['Services et prestations',0],['Investissements',0]].map(([l,b])=>`<tr style="border-bottom:1px solid var(--border)"><td style="padding:.5rem 0;color:var(--text-secondary)">${l}</td><td style="text-align:right;padding:.5rem 0;font-family:monospace">${F.money(b,true)}</td><td style="text-align:right;padding:.5rem 0;font-family:monospace;color:var(--accent)">${F.money(b*.18,true)}</td></tr>`).join('')}</tbody>
       <tfoot><tr><td colspan="2" style="padding:.625rem 0;font-weight:700">Total TVA récupérable</td><td style="text-align:right;padding:.625rem 0;font-weight:700;color:var(--accent);font-family:monospace">${F.money(k.tvàRécupérable)}</td></tr></tfoot>
     </table>
   </div>
@@ -1324,8 +1254,8 @@ function pageTVA(){
           <div style="font-size:1.5rem;font-weight:800;color:var(--red);font-family:monospace">${F.money(k.tvàNet)}</div>
         </div>
         <div class="fgrid2">
-          <div class="fg"><label class="fl">Déclaré par</label><input class="fc" value="Utilisateur principal"></div>
-          <div class="fg"><label class="fl">Qualité</label><input class="fc" value="Directeur Financier"></div>
+          <div class="fg"><label class="fl">Déclaré par</label><input class="fc" placeholder="Nom du déclarant"></div>
+          <div class="fg"><label class="fl">Qualité</label><input class="fc" placeholder="Ex : Directeur Financier"></div>
         </div>
       </div>
     </div>
@@ -1388,7 +1318,7 @@ const ROUTES={
 };
 
 function pageClients(){
-  const colors=['#16A34A','#3B82F6','#8B5CF6','#F59E0B','#DC2626','#06B6D4','#F97316','#EC4899'];
+  const colors=['#0E7C3F','#3B82F6','#8B5CF6','#D9A404','#D42027','#06B6D4','#F97316','#EC4899'];
   const totSolde=D.clients.reduce((s,c)=>s+c.solde,0);
   const risque=D.clients.filter(c=>c.statut==='risque').length;
   return `
@@ -1403,7 +1333,7 @@ function pageClients(){
   <div class="kpi blue" style="padding:.875rem"><div class="kpi-lbl" style="margin-bottom:.35rem">Total clients</div><div style="font-size:1.5rem;font-weight:700">${D.clients.length}</div></div>
   <div class="kpi amber" style="padding:.875rem"><div class="kpi-lbl" style="margin-bottom:.35rem">Total créances</div><div style="font-size:1rem;font-weight:700;color:var(--amber)">${F.money(totSolde,true)}</div></div>
   <div class="kpi red" style="padding:.875rem"><div class="kpi-lbl" style="margin-bottom:.35rem">Clients à risque</div><div style="font-size:1.5rem;font-weight:700;color:var(--red)">${risque}</div></div>
-  <div class="kpi green" style="padding:.875rem"><div class="kpi-lbl" style="margin-bottom:.35rem">Nouveaux ce mois</div><div style="font-size:1.5rem;font-weight:700;color:var(--accent)">18</div></div>
+  <div class="kpi green" style="padding:.875rem"><div class="kpi-lbl" style="margin-bottom:.35rem">Nouveaux ce mois</div><div style="font-size:1.5rem;font-weight:700;color:var(--accent)">0</div></div>
 </div>
 <div class="card" style="padding:0;overflow:hidden">
   <div style="overflow-x:auto">
@@ -1619,12 +1549,7 @@ function pageIA(){
   <div class="c4">
     <div class="card" style="margin-bottom:1rem">
       <div class="c-hd"><div class="c-ttl">Alertes intelligentes</div></div>
-      ${[
-        {ic:'⚠️',msg:'Taux de rotation stocks élevé',sev:'warning'},
-        {ic:'📈',msg:'CA en hausse +12,3% — Objectif atteint à 95%',sev:'success'},
-        {ic:'💰',msg:'DSO moyen : 28 jours — Bon recouvrement',sev:'info'},
-        {ic:'🔴',msg:'2 clients à risque — Soldes impayés > 60j',sev:'danger'}
-      ].map(a=>`<div class="alert ${a.sev}" style="margin-bottom:.5rem">${a.ic} ${a.msg}</div>`).join('')}
+      <div class="alert info" style="margin-bottom:.5rem">ℹ️ Aucune alerte pour le moment — connectez des données réelles pour activer l'analyse automatique.</div>
     </div>
     <div class="card">
       <div class="c-hd"><div class="c-ttl">Questions suggérées</div></div>
@@ -1678,7 +1603,7 @@ function saveFacture(){
   const date=document.getElementById('f-date')?.value||new Date().toISOString().slice(0,10);
   const ech=document.getElementById('f-ech')?.value||date;
   const num=D._nextFacNum||1249;
-  const ref=`FAC-DEMO-${num}`;
+  const ref=`FAC-2024-${num}`;
   D.factures.unshift({id:ref,client:cl,date,montant:Math.round(ttc),statut:'en_attente',echeance:ech});
   D.ecritures.unshift(
     {date,ref:`JV-${String(num).padStart(4,'0')}`,compte:'411000',libellé:`${ref} ${cl}`,débit:Math.round(ttc),crédit:0,journal:'VT'},
@@ -1717,7 +1642,7 @@ function showBulletin(nom,sal){
   document.getElementById('bul-title').textContent='Bulletin de paie — '+nom;
   document.getElementById('bul-body').innerHTML=`
     <div style="background:var(--bg-input);border-radius:var(--r-sm);padding:1rem;margin-bottom:1rem;display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-      <div><div style="font-size:.6875rem;color:var(--text-muted);margin-bottom:.25rem;font-weight:700;text-transform:uppercase">Employeur</div><div style="font-weight:700">Votre entreprise</div><div style="font-size:.8rem;color:var(--text-secondary)">NINEA: À renseigner · N° CNSS: À renseigner</div></div>
+      <div><div style="font-size:.6875rem;color:var(--text-muted);margin-bottom:.25rem;font-weight:700;text-transform:uppercase">Employeur</div><div style="font-weight:700">${D.company.name}</div><div style="font-size:.8rem;color:var(--text-secondary)">NINEA: ${D.company.ninea||'—'} · N° CNSS: —</div></div>
       <div><div style="font-size:.6875rem;color:var(--text-muted);margin-bottom:.25rem;font-weight:700;text-transform:uppercase">Employé</div><div style="font-weight:700">${nom}</div><div style="font-size:.8rem;color:var(--text-secondary)">Période: ${new Date().toLocaleDateString('fr-FR',{month:'long',year:'numeric'})}</div></div>
     </div>
     <table style="width:100%;border-collapse:collapse;font-size:.8125rem;margin-bottom:1rem">
@@ -1749,14 +1674,9 @@ function showBulletin(nom,sal){
   document.getElementById('modal-bulletin')?.classList.add('open');
 }
 
-// Réponses IA simulées
+// Réponses IA — l'analyse réelle nécessite des données saisies
 const IA_REPONSES={
-  'trésorerie':'📊 **Analyse Trésorerie :** Votre trésorerie nette est de **312,5 M FCFA** (+3,1% vs mois précédent). La banque représente 92% (287,4 M) et la caisse 8% (25,1 M). Le niveau est sain et couvre largement les dettes exigibles (67,3 M FCFA). **Recommandation :** Envisager un placement à court terme pour les excédents.',
-  'liquidité':'📐 **Ratios de liquidité :**\n• Liquidité générale : 2,4 ✅ (norme > 1)\n• Liquidité réduite : 1,8 ✅ (norme > 0,8)\n• Liquidité immédiate : 1,1 ✅\n\nVotre situation de liquidité est **excellente**.',
-  'ca':'📈 **Analyse CA :** Chiffre d\'affaires de 487,6 M FCFA (+12,3% vs année préc.). Progression régulière depuis janvier. Le pic est en décembre (57,4 M). **Prévision Q1 2025 :** ~145 M FCFA si la tendance se maintient.',
-  'prévision':'🔮 **Prévisions IA Q1 2025 :**\n• CA estimé : 148-155 M FCFA\n• Résultat net : ~25 M FCFA\n• Trésorerie prévisionnelle : 320-340 M FCFA\n\nModèle basé sur la tendance des 12 derniers mois.',
-  'charges':'💡 **Optimisation des charges :** Les achats représentent 39,3% des charges. Les salaires 19%. **Recommandations :** (1) Renégocier les contrats fournisseurs principaux, (2) Automatiser certaines tâches pour réduire les heures supplémentaires, (3) Optimiser la gestion des stocks (CUMP).',
-  'default':'Je suis en train d\'analyser vos données financières... Pour une analyse complète, connectez Supabase avec vos données réelles. En mode démo, voici ce que je peux vous dire : votre santé financière globale est **bonne** avec un résultat net de 89,2 M FCFA et une trésorerie positive de 312,5 M FCFA.'
+  'default':'Aucune donnée n\'est encore enregistrée dans le système. Saisissez vos factures, écritures et charges pour que l\'assistant puisse analyser votre trésorerie, vos ratios et vous fournir des recommandations personnalisées.'
 };
 
 function sendIA(){
@@ -1765,7 +1685,7 @@ function sendIA(){
   if(!inp||!msgs||!inp.value.trim())return;
   const q=inp.value.trim();
   // Message utilisateur
-  msgs.insertAdjacentHTML('beforeend',`<div style="display:flex;justify-content:flex-end;gap:.75rem"><div style="background:var(--accent-muted);border:1px solid var(--accent-border);border-radius:var(--r);padding:.75rem 1rem;max-width:80%;font-size:.8125rem">${q}</div><div style="width:32px;height:32px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.75rem;color:#fff">MD</div></div>`);
+  msgs.insertAdjacentHTML('beforeend',`<div style="display:flex;justify-content:flex-end;gap:.75rem"><div style="background:var(--accent-muted);border:1px solid var(--accent-border);border-radius:var(--r);padding:.75rem 1rem;max-width:80%;font-size:.8125rem">${q}</div><div style="width:32px;height:32px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.75rem;color:#fff">U</div></div>`);
   inp.value='';
   msgs.scrollTop=msgs.scrollHeight;
   // Réponse IA simulée
@@ -1816,20 +1736,12 @@ function navigate(page){
     // Init graphiques après rendu
     if(page==='dashboard'){
       setTimeout(()=>{
-        let tries=0;
-        const initCharts=()=>{
-          if(window.Chart || tries++>=20){
-            buildChartCA();buildChartTres();buildChartDoughnut();buildSparklines();animateKPIs();
-            return;
-          }
-          setTimeout(initCharts,100);
-        };
-        initCharts();
+        buildChartCA();buildChartTres();buildChartDoughnut();buildSparklines();animateKPIs();
       },50);
     }
   },80);
 
-  try{window.history.pushState({page},'',`#${page}`);}catch(e){window.location.hash=page;}
+  window.history.pushState({page},'',`#${page}`);
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -1901,7 +1813,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   const hash=window.location.hash.replace('#','')||'dashboard';
   navigate(ROUTES[hash]?hash:'dashboard');
 
-  setTimeout(()=>toast('ERP OHADA Pro chargé avec succès','success'),800);
+  setTimeout(()=>toast('Application ADEL chargée avec succès','success'),800);
 });
 </script>
 
